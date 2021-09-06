@@ -52,4 +52,6 @@ print (v04)
 x = 6.28 * 3 * 10**8 * 10**9 / np.array([552, 588, 615, 642])
 y = np.array([v01, v02, v03, v04])
 print (k_coef(x, y) * 1.602 * 10**(-19))
+print (b_coef(x, y) * 1.602 * 10**(-19))
+print (k_sigma(x, y) * 1.602 * 10**(-19))
 

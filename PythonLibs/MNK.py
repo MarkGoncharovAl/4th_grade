@@ -51,7 +51,10 @@ class line:
     
     def reverse(self):
         return line(self.y, self.x)
-
+    
+class graphics:
+    def __init__(self, lines):
+        self.lines = np.array([lines])
 #----------------------------------------------------------------
 #----------------------------------------------------------------
 

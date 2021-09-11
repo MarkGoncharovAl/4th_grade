@@ -95,6 +95,7 @@ Vi_642_approx = k_coef(x, y) * V_642_approx + b_coef(x, y)
 v04 = -1 * b_coef(x, y) / k_coef(x, y)
 
 mpl.rcParams['font.size'] = 16
+
 plt.figure(figsize=(16,9))
 plt.xlabel("V, В")
 plt.ylabel("VI, В")

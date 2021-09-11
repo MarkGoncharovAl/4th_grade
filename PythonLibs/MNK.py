@@ -6,10 +6,13 @@
 #       func(num) - calculate point in that line
 #       revert()  - return revert line (x <-> y)
 
-
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import xlrd
+import pandas as pd
+
+import scipy.constants as spc
 
 mpl.rcParams['font.size'] = 16 # Управление стилем, в данном случаем - размером шрифта 
 plt.figure(figsize=(16,9))
@@ -59,10 +62,3 @@ def DRAW(TITLE = "TITLE", XLABEL = "XLABEL", YLABEL = "YLABEL"):
 
 #----------------------------------------------------------------
 #----------------------------------------------------------------
-
-x1 = np.array([2, 4, 6])
-x2 = np.array([1, 2, 3])
-ln = line(x1, x2, "line")
-pt = points(np.array([1, 9, 13]), np.array([6, 7, 8]), "points", "g^")
-ln.dump("MY_LINE")
-DRAW()

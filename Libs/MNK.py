@@ -4,7 +4,7 @@
 #       dump()    - printing MNK function
 #       draw()    - drawing line and points
 #       func(num) - calculate point in that line
-#       revert()  - return revert line (x <-> y)
+#       reverse()  - return revert line (x <-> y)
 
 import numpy as np
 import matplotlib as mpl
@@ -15,9 +15,7 @@ import pandas as pd
 import scipy.constants as spc
 
 mpl.rcParams['font.size'] = 16 # Управление стилем, в данном случаем - размером шрифта 
-plt.figure(figsize=(16,9))
-plt.grid(b=True, which='major', axis='both')
-plt.grid(b=True, which='minor', axis='both')
+plt.figure(figsize=(20,15))
 
 def MNK_mid(npArr):
     return npArr.sum() / len(npArr)
@@ -42,9 +40,12 @@ class line:
         plt.plot(self.x, self.y, options_ln, label = self.name + " line")
         #plt.errorbar(x, y, xerr = x_error, yerr = y_error, fmt = '.', color="k")
 
-    def dump(self, name = "line"):
-        print(name, ": y = (", self.k, "+-", self.k_sigma, ")x + (", self.b, "+-", self.b_sigma, ")")
+    def dump(self, name = "line", round_k = 10, round_b = 10):
+        print(name, ": y = (", round(self.k, round_k), "+-", round(self.k_sigma, round_k), ")x + (", round(self.b, round_b), "+-", round(self.b_sigma, round_b), ")")
     
+    def error(self, npAr1Err, npAr2Err):
+        plt.errorbar(self.x, self.y, xerr = npAr1Err, yerr = npAr2Err, fmt='.k')
+
     def func(self, num):
         return self.k * num + self.b
     
@@ -56,8 +57,8 @@ def DRAW(TITLE = "TITLE", XLABEL = "XLABEL", YLABEL = "YLABEL"):
     plt.title(TITLE)
     plt.ylabel(YLABEL)
     plt.xlabel(XLABEL)
-    plt.legend()
-    plt.minorticks_on()
+    plt.grid(b=True, which='major', axis='both')
+    plt.grid(b=True, which='minor', axis='both')
     plt.show()
 
 #----------------------------------------------------------------

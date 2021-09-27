@@ -27,12 +27,6 @@ class points:
         self.name = name
         plt.plot(self.x, self.y, options, label = self.name)
 
-class func:
-    def __init__(self, function, start, end, count = 1000): #function == labmda
-        pts = np.linspace(start, end, count)
-        out = map(function, pts)
-        
-
 class line:
     def __init__(self, npAr1, npAr2, name = "line", options_pt="-b", options_ln="b^"):
         self.k = (MNK_mid(npAr1 * npAr2) - MNK_mid(npAr1) * MNK_mid(npAr2)) / (MNK_mid(npAr1 * npAr1) - MNK_mid(npAr1)**2)

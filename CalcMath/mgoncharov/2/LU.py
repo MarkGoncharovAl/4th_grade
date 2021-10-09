@@ -132,10 +132,3 @@ sol2 = Z.solve(f)
 
 print("Solution 1: ", sol1)
 print("Solution 2: ", sol2)
-
-f_tr = np.matrix(np.zeros([3, 1]))
-for i in range(3):
-    f_tr[i, 0] = sol1[i]
-print("\nChecking result\n", A * f_tr)
-
-if (True and )

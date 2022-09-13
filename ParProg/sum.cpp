@@ -35,7 +35,7 @@ static void many_thread(benchmark::State& state) {
 BENCHMARK(many_thread);
 
 TEST(test, test1) {
-  EXPECT_LE(std::fabs(one() - many()), 0.00001);
+  EXPECT_LE(std::fabs(one() - many()), 0.0000000001);
 }
 
 int main(int argc, char * argv[]) {

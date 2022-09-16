@@ -46,7 +46,7 @@ class Object
   sf::Texture texture_;
   sf::Sprite sprite_;
 
-public:
+  public:
   Object () :
     data_ (pixels_.data ()->data ()->data_.data ())
   {
@@ -85,13 +85,24 @@ int closeWindow ()
 }
 int updateWindow (const float pixels[SzW][SzW])
 {
-  obj.update (pixels);
-  if (window.isOpen () && window.pollEvent (event))
+  if (!window.isOpen ())
+    return 1;
+
+  while (window.pollEvent (event))
   {
+    obj.update (pixels);
     window.clear ();
     obj.draw ();
-    if (event.type == sf::Event::Closed)
+    switch (event.type)
+    {
+    case sf::Event::Closed:
       return 1;
+    case sf::Event::KeyPressed:
+      if (event.key.code == sf::Keyboard::Escape)
+        return 1;
+    default:
+      break;
+    }
     window.display ();
   }
   return 0;

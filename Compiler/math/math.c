@@ -7,6 +7,8 @@ float new_pixels[SzW][SzH];
 
 int initPixels (float pixels[SzW][SzH])
 {
+  // Boundaries
+  //------------------------------
   for (int i = 0; i < SzH; ++i)
   {
     pixels[0][i] = 100.0;
@@ -18,6 +20,7 @@ int initPixels (float pixels[SzW][SzH])
     pixels[i][0] = 50.0;
     new_pixels[i][0] = 50.0;
   }
+  //------------------------------
 
   for (int i = 1; i < SzW; ++i)
   {
@@ -27,11 +30,14 @@ int initPixels (float pixels[SzW][SzH])
       new_pixels[i][j] = 0.0;
     }
   }
+
   return 0;
 }
 
 int updatePixels (float pixels[SzW][SzH])
 {
+  // Have to make several iterations due to 
+  // small step-speed (explicit method's shortcoming)
   for (int k = 0; k < Iterations; ++k)
   {
     for (int i = 1; i < SzW - 1; ++i)
@@ -45,6 +51,11 @@ int updatePixels (float pixels[SzW][SzH])
       for (int j = 1; j < SzH - 1; ++j)
         pixels[i][j] = new_pixels[i][j];
   }
+
+  for (int i = 0; i < SzW; ++i)
+    for (int j = 0; j < SzH; ++j)
+      putPixel (i , j , pixels[i][j]);
+
   return 0;
 }
 
@@ -52,7 +63,7 @@ void check_impl (int err_code , const char* file , const unsigned line)
 {
   if (err_code)
   {
-    printf ("ERROR: in file %s, line %u" , file , line);
+    printf ("ERROR in file %s, line %u" , file , line);
     abort ();
   }
 }

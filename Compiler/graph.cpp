@@ -60,7 +60,12 @@ class Object
   }
   void draw ()
   {
+    texture_.update (data_);
     window.draw (sprite_);
+  }
+  void update (int x , int y , float cur_heat)
+  {
+    pixels_[x][y].heat (cur_heat);
   }
   void update (const float pixels[SzW][SzH])
   {
@@ -83,14 +88,18 @@ int closeWindow ()
   window.close ();
   return 0;
 }
-int updateWindow (const float pixels[SzW][SzW])
+int putPixel (int x , int y , float heat)
+{
+  obj.update (x , y , heat);
+  return 0;
+}
+int flush ()
 {
   if (!window.isOpen ())
     return 1;
 
   while (window.pollEvent (event))
   {
-    obj.update (pixels);
     window.clear ();
     obj.draw ();
     switch (event.type)

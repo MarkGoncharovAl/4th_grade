@@ -1,4 +1,3 @@
-#include "link/link.h"
 #include "math/math.h"
 #include <unistd.h>
 
@@ -12,7 +11,7 @@ int main ()
   while (1)
   {
     check (updatePixels (pixels));
-    if (updateWindow (pixels) == 1)
+    if (flush () == 1) // we have to exit
       break;
   }
   check (closeWindow ());

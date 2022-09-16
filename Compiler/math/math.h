@@ -1,5 +1,5 @@
 #pragma once
-#include "../link/common.h"
+#include "../link/link.h"
 
 int initPixels (float pixels[SzW][SzH]);
 int updatePixels (float pixels[SzW][SzH]);

@@ -3,7 +3,7 @@
 
 int main ()
 {
-  float pixels[SzW][SzH];
+  short pixels[SzW][SzH];
 
   check (initPixels (pixels));
   check (initWindow ());

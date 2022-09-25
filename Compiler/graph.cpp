@@ -6,7 +6,6 @@
 #include <iostream>
 
 sf::RenderWindow window (sf::VideoMode (SzW , SzH) , "My window");
-sf::Event event;
 
 class Object
 {
@@ -33,11 +32,38 @@ class Object
     {
       r (rn); g (gn); b (bn); t (tn);
     }
-    void heat (const float heat)
+    void heat (const short heat)
     {
-      r (std::round (heat * 2.55));
-      g (165 - std::round (heat * 1.65));
-      b (200 - std::round (heat * 2.0));
+      if (heat < ColorPixel)
+      {
+        r (0);
+        g (0);
+        b (heat / 10);
+      }
+      else if (heat < ColorPixel * 2)
+      {
+        r ((heat - ColorPixel) / 10);
+        g (0);
+        b (ColorSize - 1);
+      }
+      else if (heat < ColorPixel * 3)
+      {
+        r (ColorSize - 1);
+        g (0);
+        b (ColorSize - 1 - (heat - ColorPixel * 2) / 10);
+      }
+      else if (heat < ColorPixel * 4)
+      {
+        r (ColorSize - 1);
+        g ((heat - ColorPixel * 3) / 10);
+        b (0);
+      }
+      else if (heat < ColorPixel * 5)
+      {
+        r (ColorSize - 1);
+        g (ColorSize - 1);
+        b ((heat - ColorPixel * 4) / 10);
+      }
     }
   };
 
@@ -46,7 +72,7 @@ class Object
   sf::Texture texture_;
   sf::Sprite sprite_;
 
-  public:
+public:
   Object () :
     data_ (pixels_.data ()->data ()->data_.data ())
   {
@@ -63,11 +89,11 @@ class Object
     texture_.update (data_);
     window.draw (sprite_);
   }
-  void update (int x , int y , float cur_heat)
+  void update (int x , int y , short cur_heat)
   {
     pixels_[x][y].heat (cur_heat);
   }
-  void update (const float pixels[SzW][SzH])
+  void update (const short pixels[SzW][SzH])
   {
     for (int i = 0; i < SzW; ++i)
       for (int j = 0; j < SzH; ++j)
@@ -88,7 +114,7 @@ int closeWindow ()
   window.close ();
   return 0;
 }
-int putPixel (int x , int y , float heat)
+int putPixel (int x , int y , short heat)
 {
   obj.update (x , y , heat);
   return 0;
@@ -97,11 +123,11 @@ int flush ()
 {
   if (!window.isOpen ())
     return 1;
-
+  window.clear ();
+  obj.draw ();
+  sf::Event event;
   while (window.pollEvent (event))
   {
-    window.clear ();
-    obj.draw ();
     switch (event.type)
     {
     case sf::Event::Closed:
@@ -112,7 +138,7 @@ int flush ()
     default:
       break;
     }
-    window.display ();
   }
+  window.display ();
   return 0;
 }

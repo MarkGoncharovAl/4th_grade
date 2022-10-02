@@ -1,6 +1,8 @@
 #pragma once
 
-#define SzW 400
-#define SzH 400
+#define ScreenW 400
+#define ScreenH 350
+#define SzW 300
+#define SzH 300
 #define ColorSize 256
 #define ColorPixel 2560

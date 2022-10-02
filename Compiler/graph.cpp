@@ -4,8 +4,16 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <array>
 
-sf::RenderWindow window (sf::VideoMode (SzW , SzH) , "My window");
+sf::RenderWindow window (sf::VideoMode (ScreenW , ScreenH) , "My window");
+
+sf::Font font;
+std::array<std::pair<sf::RectangleShape , sf::Text> , 5> hits;
+std::array<sf::Text , 2> axis;
+
+constexpr float OffsetW = 25;
+constexpr float OffsetH = 25;
 
 class Object
 {
@@ -73,11 +81,12 @@ class Object
   sf::Sprite sprite_;
 
 public:
-  Object () :
+  Object ():
     data_ (pixels_.data ()->data ()->data_.data ())
   {
     texture_.create (SzW , SzH);
     sprite_.setTexture (texture_); // needed to draw the texture on screen
+    sprite_.setPosition (OffsetW , OffsetH);
     for (auto& row : pixels_)
       for (auto& pixel : row)
         pixel.set (255 , 200 , 0 , 255);
@@ -103,10 +112,40 @@ public:
 } obj;
 
 
-
 int initWindow ()
 {
   window.setFramerateLimit (60);
+  if (!font.loadFromFile ("/home/mark/Programming/7/ParProga/MIPT/Compiler/FreeSans-LrmZ.ttf"))
+    return 1;
+  for (auto& text : axis)
+  {
+    text.setFont (font);
+    text.setCharacterSize (15);
+    text.setFillColor (sf::Color::Red);
+    text.setStyle (sf::Text::Bold | sf::Text::Underlined);
+  }
+  axis[0].setString ("X");
+  axis[0].setPosition (8 , 160);
+  axis[1].setString ("Y");
+  axis[1].setPosition (170 , 325);
+  for (int i = 0; i < hits.size (); ++i)
+  {
+    hits[i].first.setPosition (340 , 10 + 50 * (i + 1));
+    hits[i].first.setSize (sf::Vector2f (15 , 7));
+    hits[i].second.setPosition (340 , 25 + 50 * (i + 1));
+    hits[i].second.setFont (font);
+    hits[i].second.setCharacterSize (15);
+  }
+  hits[0].first.setFillColor (sf::Color (0 , 0 , 255));
+  hits[0].second.setString ("20deg");
+  hits[1].first.setFillColor (sf::Color (255 , 0 , 255));
+  hits[1].second.setString ("40deg");
+  hits[2].first.setFillColor (sf::Color (255 , 0 , 0));
+  hits[2].second.setString ("60deg");
+  hits[3].first.setFillColor (sf::Color (255 , 255 , 0));
+  hits[3].second.setString ("80deg");
+  hits[4].first.setFillColor (sf::Color (255 , 255 , 255));
+  hits[4].second.setString ("100deg");
   return 0;
 }
 int closeWindow ()
@@ -125,6 +164,14 @@ int flush ()
     return 1;
   window.clear ();
   obj.draw ();
+  for (const auto& text : axis)
+    window.draw (text);
+  for (const auto& hit : hits)
+  {
+    window.draw (hit.first);
+    window.draw (hit.second);
+  }
+
   sf::Event event;
   while (window.pollEvent (event))
   {

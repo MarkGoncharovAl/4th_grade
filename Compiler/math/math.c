@@ -10,16 +10,17 @@ int initPixels ()
 {
   // Boundaries
   //------------------------------
+  short MaxColor = ColorPixel * 5 - 1;
   for (int i = 0; i < SzH; ++i)
   {
-    pixels[0][i] = ColorPixel * 5 - 1;
-    pixels[SzW - 1][i] = ColorPixel * 5 - 1;
+    pixels[0][i] = MaxColor * i / SzH;
+    pixels[SzW - 1][i] = MaxColor - MaxColor * i / SzH;
   }
 
   for (int i = 0; i < SzW; ++i)
   {
-    pixels[i][0] = ColorPixel * 5 - 1;
-    pixels[i][SzH - 1] = ColorPixel * 5 - 1;
+    pixels[i][0] = MaxColor * i / SzW;
+    pixels[i][SzH - 1] = MaxColor - MaxColor * i / SzW;
   }
   //------------------------------
 

@@ -5,14 +5,14 @@ int main ()
 {
   short pixels[SzW][SzH];
 
-  check (initPixels (pixels));
-  check (initWindow ());
+  initPixels (pixels);
+  initWindow ();
 
   while (1)
   {
-    check (updatePixels (pixels));
+    updatePixels (pixels);
     if (flush () == 1) // we have to exit
       break;
   }
-  check (closeWindow ());
+  closeWindow ();
 }

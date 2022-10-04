@@ -1,7 +1,4 @@
-#include "math.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include "math.h" // my .h file
 
 short pixels[SzW][SzH];
 short new_pixels[SzW][SzH];
@@ -53,13 +50,4 @@ int updatePixels ()
       putPixel (i , j , new_pixels[i][j]);
     }
   return 0;
-}
-
-void check_impl (int err_code , const char* file , const unsigned line)
-{
-  if (err_code)
-  {
-    printf ("ERROR in file %s, line %u" , file , line);
-    abort ();
-  }
 }

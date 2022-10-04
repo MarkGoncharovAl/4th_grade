@@ -1,11 +1,10 @@
-; ModuleID = 'math.c'
-source_filename = "math.c"
+; ModuleID = '../math/math.c'
+source_filename = "../math/math.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
 @pixels = common dso_local local_unnamed_addr global [300 x [300 x i16]] zeroinitializer, align 16
 @new_pixels = common dso_local local_unnamed_addr global [300 x [300 x i16]] zeroinitializer, align 16
-@.str = private unnamed_addr constant [26 x i8] c"ERROR in file %s, line %u\00", align 1
 
 ; Function Attrs: nofree norecurse nounwind uwtable
 define dso_local i32 @initPixels([300 x i16]* nocapture readnone %0) local_unnamed_addr #0 {
@@ -198,7 +197,7 @@ define dso_local i32 @updatePixels([300 x i16]* nocapture readnone %0) local_unn
   %56 = getelementptr inbounds [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %46, i64 %53
   store i16 %55, i16* %56, align 2, !tbaa !2
   %57 = trunc i64 %53 to i32
-  %58 = tail call i32 @putPixel(i32 %47, i32 %57, i16 signext %55) #6
+  %58 = tail call i32 @putPixel(i32 %47, i32 %57, i16 signext %55) #4
   %59 = add nuw nsw i64 %53, 1
   %60 = icmp eq i64 %59, 299
   br i1 %60, label %49, label %52
@@ -206,40 +205,17 @@ define dso_local i32 @updatePixels([300 x i16]* nocapture readnone %0) local_unn
 
 declare dso_local i32 @putPixel(i32, i32, i16 signext) local_unnamed_addr #2
 
-; Function Attrs: nounwind uwtable
-define dso_local void @check_impl(i32 %0, i8* %1, i32 %2) local_unnamed_addr #1 {
-  %4 = icmp eq i32 %0, 0
-  br i1 %4, label %7, label %5
-
-5:                                                ; preds = %3
-  %6 = tail call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([26 x i8], [26 x i8]* @.str, i64 0, i64 0), i8* %1, i32 %2)
-  tail call void @abort() #7
-  unreachable
-
-7:                                                ; preds = %3
-  ret void
-}
-
-; Function Attrs: nofree nounwind
-declare dso_local i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #3
-
-; Function Attrs: noreturn nounwind
-declare dso_local void @abort() local_unnamed_addr #4
+; Function Attrs: argmemonly nounwind willreturn
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #3
 
 ; Function Attrs: argmemonly nounwind willreturn
-declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #5
-
-; Function Attrs: argmemonly nounwind willreturn
-declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #5
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #3
 
 attributes #0 = { nofree norecurse nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nofree nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { noreturn nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #5 = { argmemonly nounwind willreturn }
-attributes #6 = { nounwind }
-attributes #7 = { noreturn nounwind }
+attributes #3 = { argmemonly nounwind willreturn }
+attributes #4 = { nounwind }
 
 !llvm.module.flags = !{!0}
 !llvm.ident = !{!1}

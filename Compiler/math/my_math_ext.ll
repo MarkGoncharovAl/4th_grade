@@ -1,14 +1,10 @@
-; ModuleID = '../math/math.c'
-source_filename = "../math/math.c"
-;target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-pc-linux-gnu"
+; ModuleID = 'math'
+source_filename = "math"
 
 @pixels = common global [300 x [300 x i16]] zeroinitializer, align 16
-@new_pixels =  global [300 x [300 x i16]] zeroinitializer, align 16
+@new_pixels = common global [300 x [300 x i16]] zeroinitializer, align 16
 
-; Function Attrs: nofree norecurse nounwind uwtable
 define i32 @initPixels([300 x i16]* %0) {
-1:
   br label %2
 
 2:                                                ; preds = %63, %1
@@ -29,14 +25,14 @@ define i32 @initPixels([300 x i16]* %0) {
   br i1 %14, label %15, label %63
 
 15:                                               ; preds = %2
-  store i16 12628, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 296), align 16
-  store i16 171, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 296), align 8
-  store i16 12671, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 297), align 2
-  store i16 128, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 297), align 2
-  store i16 12713, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 298), align 4
-  store i16 86, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 298), align 4 
-  store i16 12756, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 299), align 2
-  store i16 43, i16* getelementptr ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 299), align 2
+  store i16 12628, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i16 296), align 16
+  store i16 171, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 296), align 8
+  store i16 12671, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 297), align 2
+  store i16 128, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 297), align 2
+  store i16 12713, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 298), align 4
+  store i16 86, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 298), align 4
+  store i16 12756, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 0, i64 299), align 2
+  store i16 43, i16* getelementptr inbounds ([300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 299, i64 299), align 2
   br label %16
 
 16:                                               ; preds = %16, %15
@@ -57,15 +53,15 @@ define i32 @initPixels([300 x i16]* %0) {
   %29 = trunc i32 %28 to i16
   %30 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %25, i64 0
   store i16 %29, i16* %30, align 8
-  %31 = sub nuw nsw i16 12799, %29
-  %32 = getelementptr inbounds [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %25, i64 299
+  %31 = sub i16 12799, %29
+  %32 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %25, i64 299
   store i16 %31, i16* %32, align 2
   %33 = add i64 %17, 2
   %34 = icmp eq i64 %33, 300
   br i1 %34, label %35, label %16
 
-35:                                               ; preds = %16, %35
-  %36 = phi i64 [ %40, %35 ], [ 0, %16 ]
+35:                                               ; preds = %35, %16
+  %36 = phi i64 [ 0, %16 ], [ %40, %35 ]
   %37 = or i64 %36, 1
   %38 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %37, i64 1
   %39 = bitcast i16* %38 to i8*
@@ -73,12 +69,12 @@ define i32 @initPixels([300 x i16]* %0) {
   %40 = add i64 %36, 2
   %41 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %40, i64 1
   %42 = bitcast i16* %41 to i8*
-  call void @llvm.memset.p0i8.i64(i8*%42, i8 0, i64 596, i1 false)
+  call void @llvm.memset.p0i8.i64(i8* %42, i8 0, i64 596, i1 false)
   %43 = icmp eq i64 %40, 298
   br i1 %43, label %44, label %35
 
-44:                                               ; preds = %35, %44
-  %45 = phi i64 [ %60, %44 ], [ 0, %35 ]
+44:                                               ; preds = %44, %35
+  %45 = phi i64 [ 0, %35 ], [ %60, %44 ]
   %46 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @new_pixels, i64 0, i64 %45, i64 0
   %47 = bitcast i16* %46 to i8*
   %48 = getelementptr [300 x [300 x i16]], [300 x [300 x i16]]* @pixels, i64 0, i64 %45, i64 0
@@ -205,7 +201,9 @@ define i32 @updatePixels([300 x i16]* %0) {
 declare i32 @putPixel(i32, i32, i16 signext)
 
 ; Function Attrs: argmemonly nounwind willreturn
-declare void @llvm.memcpy.p0i8.p0i8.i64(i8*, i8*, i64, i1)
+declare void @llvm.memset.p0i8.i64(i8* nocapture writeonly, i8, i64, i1 immarg) #0
 
 ; Function Attrs: argmemonly nounwind willreturn
-declare void @llvm.memset.p0i8.i64(i8*, i8, i64, i1)
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #0
+
+attributes #0 = { argmemonly nounwind willreturn }

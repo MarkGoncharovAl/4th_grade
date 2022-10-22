@@ -1,9 +1,9 @@
 #pragma once
 #include "common.h"
 
-int initWindow ();
-int closeWindow ();
+int initWindow();
+int closeWindow();
 
 // Interface for this task
-int putPixel (int x , int y , short heat);
-int flush ();
+int putPixel(int x, int y, short heat);
+int flush();

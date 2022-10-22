@@ -1,18 +1,16 @@
 #include "math/math.h"
 #include <unistd.h>
 
-int main ()
-{
+int main() {
   short pixels[SzW][SzH];
 
-  initPixels (pixels);
-  initWindow ();
+  initPixels(pixels);
+  initWindow();
 
-  while (1)
-  {
-    updatePixels (pixels);
-    if (flush () == 1) // we have to exit
+  while (1) {
+    updatePixels(pixels);
+    if (flush() == 1) // we have to exit
       break;
   }
-  closeWindow ();
+  closeWindow();
 }

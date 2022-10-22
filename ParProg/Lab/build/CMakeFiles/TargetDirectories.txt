@@ -1,0 +1,3 @@
+/home/mark/Programming/7/ParProga/MIPT/ParProg/Lab/build/CMakeFiles/rebuild_cache.dir
+/home/mark/Programming/7/ParProga/MIPT/ParProg/Lab/build/CMakeFiles/edit_cache.dir
+/home/mark/Programming/7/ParProga/MIPT/ParProg/Lab/build/CMakeFiles/openmp.dir

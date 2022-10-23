@@ -18,5 +18,5 @@ find_package(MPI REQUIRED)
 include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 
 message ("Building!")
-add_executable (openmp main.cpp)
+add_executable (openmp mp.cpp)
 target_link_libraries (openmp PUBLIC Threads::Threads OpenMP::OpenMP_CXX "${GTEST_BOTH_LIBRARIES}" benchmark::benchmark)

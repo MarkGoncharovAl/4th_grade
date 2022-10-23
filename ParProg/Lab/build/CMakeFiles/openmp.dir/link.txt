@@ -1,1 +1,0 @@
-/usr/bin/g++  -Wall -std=c++2a   CMakeFiles/openmp.dir/main.cpp.o  -o openmp  /usr/lib/x86_64-linux-gnu/libgtest.a /usr/lib/x86_64-linux-gnu/libgtest_main.a /usr/local/lib/libbenchmark.a /usr/lib/gcc/x86_64-linux-gnu/9/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.so -lpthread -lrt 

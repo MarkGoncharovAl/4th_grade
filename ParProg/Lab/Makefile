@@ -7,7 +7,7 @@ compile:
 	cmake --build build
 	mpic++ mpi.cc -std=c++2a -o build/mpi
 
-openmp:
+mp:
 	./build/openmp
 
 mpi:

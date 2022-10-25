@@ -6,8 +6,12 @@
 #include <iostream>
 #include <omp.h>
 
-constexpr int ISIZE = 1000;
-constexpr int JSIZE = 1000;
+constexpr int ISIZE = 3000;
+constexpr int JSIZE = 3000;
+
+#ifndef THREADS
+#define THREADS 8
+#endif
 
 constexpr int max (int lhs , int rhs)
 {
@@ -57,7 +61,7 @@ void sequential2A (std::vector<std::vector<double>>& data)
 void parallel2A (std::vector<std::vector<double>>& data)
 {
   auto size = ISIZE / 8;
-#pragma omp parallel for
+#pragma omp parallel for num_threads(THREADS)
   for (int k = 0; k < 8; ++k)
   {
     for (int i = k * size; i < (k + 1) * size; ++i)
@@ -67,7 +71,7 @@ void parallel2A (std::vector<std::vector<double>>& data)
 
   for (int i = 0; i < ISIZE - 1; ++i)
   {
-#pragma omp parallel for
+#pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j < JSIZE; ++j)
     {
       data[i][j] = std::sin (0.1 * data[i + 1][j - 1]);

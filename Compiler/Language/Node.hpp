@@ -35,10 +35,13 @@ class Decl final: public INode
 {
   int val;
   std::string varname;
+  INode* scope;
 
   // INode interface
   public:
-  Decl (const std::string& n): varname (n) {}
+  Decl (const std::string& n , INode* def_scope): varname (n) ,
+    scope (def_scope)
+  {}
   llvm::Value* codegen () override;
   llvm::Value* assign (llvm::Value* RHS);
   void dump () const override;
@@ -53,6 +56,8 @@ class Scope final: public IScope
 {
   std::vector<INode*> branches;
   std::unordered_map<std::string , INode*> symbols_;
+  std::unordered_map<std::string , INode*> funcs_;
+  std::unordered_map<std::string , llvm::Value*> allocs_;
 
   IScope* prev_scope;
 
@@ -67,16 +72,10 @@ class Scope final: public IScope
   IScope* resetScope () const override;
   void addBranch (INode* branch) override;
   INode* access (std::string const& var_name) override;
-  INode* visible (std::string const& var_name) override;
 
-  void add (std::string symbol , INode* n) { symbols_[symbol] = n; }
-  INode* find (std::string symbol)
-  {
-    auto it = symbols_.find (symbol);
-    if (it == symbols_.end ())
-      return nullptr;
-    return it->second;
-  }
+  void add (std::string symbol , INode* n) override;
+  INode* find (const std::string& symbol) override;
+  llvm::Value* findAlloc (const std::string& symbol);
 
   public:
   Scope (Scope* prev): prev_scope (prev) {}
@@ -103,17 +102,18 @@ class Op final: public INode
 // While loop node
 class While final: public INode
 {
-  INode* op = nullptr;
-  INode* scope = nullptr;
+  INode* cmp;
+  INode* scope;
 
-  // INode interface
   public:
   llvm::Value* codegen () override;
   void dump () const override;
 
-  public:
-  While (INode* o , INode* s): op (o) , scope (s) {}
-  ~While ();
+  While (INode* def_cmp , INode* def_scope)
+    : cmp (def_cmp) ,
+    scope (def_scope)
+  {}
+  ~While () {};
 };
 
 // If node
@@ -121,8 +121,6 @@ class If final: public INode
 {
   INode* cmp;
   INode* scope;
-  llvm::BasicBlock* block_true = nullptr;
-  llvm::BasicBlock* block_out = nullptr;
 
   public:
   llvm::Value* codegen () override;
@@ -132,10 +130,19 @@ class If final: public INode
     : cmp (def_cmp) ,
     scope (def_scope)
   {}
-  ~If ()
-  {
-    //if (cmp && typeid(Decl) != typeid(*cmp))
-    //  delete cmp;
-    //delete scope;
-  }
+  ~If () {}
+};
+
+class Def final: public INode
+{
+  std::string name;
+  INode* scope;
+  llvm::Function* func;
+
+  public:
+  llvm::Value* codegen () override;
+  void dump () const override;
+
+  Def (const std::string& def_name , INode* def_scope);
+  ~Def () {}
 };

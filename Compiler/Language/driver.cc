@@ -72,26 +72,26 @@ class Printer
       int_string , PrintArg});
     Builder->CreateRetVoid ();
 
-    llvm::FunctionType* PrintTy2 = llvm::FunctionType::get (
-    Builder->getVoidTy () ,
-    llvm::ArrayRef<llvm::Type*>{} ,
-    true);
-    char_print = llvm::Function::Create (
-    PrintTy2 , llvm::Function::ExternalLinkage , "__print_char" , Module);
-    llvm::BasicBlock* PrintBB2 =
-      llvm::BasicBlock::Create (*Context , "" , char_print);
-    Builder->SetInsertPoint (PrintBB2);
-    llvm::Value* PrintArg2 = static_cast<llvm::Value*> (char_print->arg_begin ());
-    Builder->CreateCall (PrintfTyCallee , llvm::ArrayRef<llvm::Value*>{
-      char_string , PrintArg2});
-    Builder->CreateRetVoid ();
+    //llvm::FunctionType* PrintTy2 = llvm::FunctionType::get (
+    //Builder->getVoidTy () ,
+    //llvm::ArrayRef<llvm::Type*>{} ,
+    //true);
+    //char_print = llvm::Function::Create (
+    //PrintTy2 , llvm::Function::ExternalLinkage , "__print_char" , Module);
+    //llvm::BasicBlock* PrintBB2 =
+    //  llvm::BasicBlock::Create (*Context , "" , char_print);
+    //Builder->SetInsertPoint (PrintBB2);
+    //llvm::Value* PrintArg2 = static_cast<llvm::Value*> (char_print->arg_begin ());
+    //Builder->CreateCall (PrintfTyCallee , llvm::ArrayRef<llvm::Value*>{
+    //  char_string , PrintArg2});
+    //Builder->CreateRetVoid ();
   }
 
   private:
   llvm::GlobalVariable* int_string = nullptr;
   llvm::GlobalVariable* char_string = nullptr;
   llvm::Function* int_print;
-  llvm::Function* char_print;
+  //llvm::Function* char_print;
 };
 
 int main (int argc , char* argv [])

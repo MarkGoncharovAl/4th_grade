@@ -26,6 +26,10 @@ int         [0-9]+
 "\n"        {  yyinlinePos = 0; }
 "\r"        {}
 {ws}        {  BeginToken(yytext, &yyinlinePos); }
+"def"       {
+               BeginToken(yytext, &yyinlinePos);
+               return DEF;
+            }   
 "if"        {
                BeginToken(yytext, &yyinlinePos);
                return IF;

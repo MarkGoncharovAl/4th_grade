@@ -14,7 +14,7 @@
 %defines
 
 %token NAME VALUE
-%token WHILE IF
+%token WHILE IF DEF
 %token SM LBR RBR LPAR RPAR LCB RCB ILLEGAL
 %token OUTPUT
 %token DATA
@@ -48,14 +48,9 @@ stms:         stm                     { currentScope->addBranch($1.treeNode); }
 stm:          oper                    { $$ = $1; }
 
 oper:         assign                  { $$ = $1; }
-            | if                      { 
-                                        currentScope = currentScope->resetScope();
-                                        $$ = $1;
-                                      }
-            | while                   { 
-                                        currentScope = currentScope->resetScope();
-                                        $$ = $1;
-                                      }
+            | def                     { $$ = $1; }
+            | if                      { $$ = $1; }
+            | while                   { $$ = $1; }
             | output                  { $$ = $1; }
 
 assign:       lval ASG expr SM        { $$.treeNode = make_op($1.treeNode, Ops::Assign, $3.treeNode); }
@@ -68,7 +63,7 @@ expr:         expr PLUS expr          { $$.treeNode = make_op($1.treeNode, Ops::
             | expr DIV expr           { $$.treeNode = make_op($1.treeNode, Ops::Div, $3.treeNode); }
             | MINUS expr %prec UMINUS { $$.treeNode = make_op(make_value(0), Ops::Minus, $2.treeNode); }
             | NAME                    { 
-                                        $$.treeNode = currentScope->visible($1.name);
+                                        $$.treeNode = currentScope->find($1.name);
                                         if (!$$.treeNode) {
                                           YYLTYPE * info = &@1;
                                           PrintError("Using undeclared variable");
@@ -79,9 +74,12 @@ expr:         expr PLUS expr          { $$.treeNode = make_op($1.treeNode, Ops::
             | LPAR expr RPAR          { $$.treeNode = $2.treeNode; }
 
 if:           IF lexpr scope          {
-                                        currentScope = currentScope->push();
-                                        currentScope->addBranch($3.treeNode);
-                                        $$.treeNode = make_if($2.treeNode, currentScope);
+                                        $$.treeNode = make_if($2.treeNode, $3.treeNode);
+                                      }
+
+def:          DEF NAME scope          {
+                                        $$.treeNode = make_def($2.name, $3.treeNode);
+                                        currentScope->add($2.name, $$.treeNode);
                                       }
 
 lexpr:        expr                    { $$ = $1; }
@@ -91,18 +89,8 @@ lexpr:        expr                    { $$ = $1; }
             | NOT lexpr               { $$.treeNode = make_op(nullptr, Ops::Not, $2.treeNode); }
             | LPAR lexpr RPAR         { $$ = $2; }
 
-while:        while_head stm          { 
-                                        currentScope->addBranch($2.treeNode);
-                                        $$.treeNode = make_while($1.treeNode, currentScope);
-                                      }
-            | while_head scope        { 
-                                        currentScope->addBranch($2.treeNode);
-                                        $$.treeNode = make_while($1.treeNode, currentScope);
-                                      }
-
-while_head:   WHILE LPAR lexpr RPAR   {
-                                        currentScope = currentScope->push();
-                                        $$ = $3;
+while:        WHILE lexpr scope       { 
+                                        $$.treeNode = make_while($2.treeNode, $3.treeNode);
                                       }
 
 output:       OUTPUT expr SM          { $$.treeNode = make_op(nullptr, Ops::StdOut, $2.treeNode); }
@@ -119,4 +107,3 @@ int wholeProgramAction() {
   currentScope->codegen();
   return 0;
 }
-

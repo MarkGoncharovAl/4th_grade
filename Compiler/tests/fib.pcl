@@ -1,7 +1,11 @@
-n = 0;
-a = 0;
-b = 1;
-print b + 6;
 x = 4;
 
-if x > 3 { y = 1; }
+def foo {
+  print 6;
+}
+
+while x > 2 { 
+  y = 1; 
+  print y;
+  x = x - 1;
+}

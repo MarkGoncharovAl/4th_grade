@@ -1,29 +1,27 @@
 
 import matplotlib.pyplot as plt
-import sys
+from mpl_toolkits.axes_grid1 import host_subplot
+import mpl_toolkits.axisartist as AA
+import numpy
 
+x = []
+y = []
+y2 = []
+if len(sys.argv) != 3:
+    print('ERROR: files not passed as argument')
 
-def main():
-    x = []
-    y = []
+for line in open(sys.argv[1], 'r'):
+    lines = [i for i in line.split()]
+    x.append(lines[0])
+    y.append(lines[1])
+for line in open(sys.argv[2], 'r'):
+    lines = [i for i in line.split()]
+    y2.append(lines[1])
 
-    if len(sys.argv) != 2:
-        print('ERROR: file not passed as argument')
-        return 1
-
-    for line in open(sys.argv[1], 'r'):
-        lines = [i for i in line.split()]
-        x.append(lines[0])
-        y.append(lines[1])
-        
-    plt.title("FFT execution speed")
-    plt.xlabel('Input size')
-    plt.ylabel('CPU time')
-    plt.xlim([0, 33554432])
-    plt.ylim([0, 10e-3])
-    plt.grid()  
-    plt.scatter(x, y, marker = 'o', c = 'g')    
-    plt.show()
-
-if __name__ == '__main__':
-    sys.exit(main())
+fig = plt.figure()
+plt.xlabel('Width')
+plt.ylabel('Height')
+ax = fig.gca()
+ax.plot(x, y, 'ro')
+ax.plot(x, y2, 'ro')
+plt.show()

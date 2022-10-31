@@ -1,2 +1,3 @@
 compile:
-	g++ fft_openmp_serial.cpp -o serial
+	g++ serial.cpp -o serial
+	g++ parallel.cpp -fopenmp -o parallel

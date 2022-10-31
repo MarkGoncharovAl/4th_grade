@@ -10,10 +10,12 @@
 #include <cstdarg>
 #include <cstring>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <variant>
 
 extern IScope *currentScope;
+extern std::stack<llvm::Function *> stackFunction;
 
 #define YYERROR_VERBOSE 1
 

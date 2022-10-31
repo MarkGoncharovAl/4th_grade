@@ -16,7 +16,7 @@
 %token NAME VALUE
 %token WHILE IF DEF
 %token SM LBR RBR LPAR RPAR LCB RCB ILLEGAL
-%token OUTPUT
+%token OUTPUT RET UP
 %token DATA
 %right ASG
 %nonassoc RELOP
@@ -35,6 +35,7 @@ program:      stms                    { wholeProgramAction(); }
 scope:        open_sc stms close_sc   { $$ = $3; }
 
 open_sc:      LCB                     { currentScope = currentScope->push(); }
+open_up:      UP                      { currentScope = currentScope->push(); }
 
 close_sc:     RCB                     {
                                         $$.treeNode = currentScope;
@@ -48,10 +49,11 @@ stms:         stm                     { currentScope->addBranch($1.treeNode); }
 stm:          oper                    { $$ = $1; }
 
 oper:         assign                  { $$ = $1; }
-            | def                     { $$ = $1; }
+            | defStat                 { $$ = $1; }
             | if                      { $$ = $1; }
             | while                   { $$ = $1; }
             | output                  { $$ = $1; }
+            | ret                     { $$ = $1; }
 
 assign:       lval ASG expr SM        { $$.treeNode = make_op($1.treeNode, Ops::Assign, $3.treeNode); }
 
@@ -72,14 +74,36 @@ expr:         expr PLUS expr          { $$.treeNode = make_op($1.treeNode, Ops::
             | VALUE                   { $$.treeNode = make_value($1.getInt()); }
             | INPUT                   { $$.treeNode = make_op(nullptr, Ops::StdIn, nullptr); }
             | LPAR expr RPAR          { $$.treeNode = $2.treeNode; }
-
-if:           IF lexpr scope          {
-                                        $$.treeNode = make_if($2.treeNode, $3.treeNode);
+            | LBR NAME RBR            { 
+                                        $$.treeNode = make_call($2.name, currentScope, nullptr);
+                                      }
+            | LBR NAME exprs RBR      { 
+                                        $$.treeNode = make_call($2.name, currentScope, $3.treeNode);
                                       }
 
-def:          DEF NAME scope          {
-                                        $$.treeNode = make_def($2.name, $3.treeNode);
-                                        currentScope->add($2.name, $$.treeNode);
+exprs:        expr                    { $$.treeNode = make_storage($1.treeNode); } 
+            | expr exprs              { $$.treeNode = add_storage ($2.treeNode, $1.treeNode); }
+
+if:           IF lexpr scope          {
+                                        $$.treeNode = make_if($2.treeNode, $3.treeNode, stackFunction.top());
+                                      }
+
+defStat:      def stms close_sc       {
+                                        add_scope($1.treeNode, $3.treeNode);
+                                        currentScope->addFunc($1.name, $1.treeNode);
+                                        $$.treeNode = $1.treeNode;
+                                        stackFunction.pop();
+                                      }
+
+def:          DEF NAME open_up names LCB
+                                      {
+                                        $$.treeNode = make_def($2.name, $4.treeNode);
+                                        currentScope->access($4.treeNode, $$.treeNode);
+                                        $$.name = $2.name;
+                                        stackFunction.push(create_function($$.treeNode));
+                                      }
+ret:          RET expr SM             {
+                                        $$.treeNode = make_ret($2.treeNode);
                                       }
 
 lexpr:        expr                    { $$ = $1; }
@@ -90,11 +114,14 @@ lexpr:        expr                    { $$ = $1; }
             | LPAR lexpr RPAR         { $$ = $2; }
 
 while:        WHILE lexpr scope       { 
-                                        $$.treeNode = make_while($2.treeNode, $3.treeNode);
+                                        $$.treeNode = make_while($2.treeNode, $3.treeNode, stackFunction.top());
                                       }
 
 output:       OUTPUT expr SM          { $$.treeNode = make_op(nullptr, Ops::StdOut, $2.treeNode); }
             | OUTPUT DATA SM          { $$.treeNode = make_op(nullptr, Ops::StdOut, $2.treeNode); }
+
+names:        NAME                    { $$.treeNode = make_names($1.name); }
+            | NAME names              { $$.treeNode = add_name ($2.treeNode, $1.name); }
 
 %%
     

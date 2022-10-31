@@ -4,13 +4,13 @@
 //
 //------------------------------------------------------------------------------
 
+#include <boost/program_options.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
-#include <boost/program_options.hpp>
 
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
@@ -20,146 +20,131 @@
 
 #include "parser.hpp"
 #include <fstream>
+#include <stack>
 
-IScope* currentScope = nullptr;
+IScope *currentScope = nullptr;
+std::stack<llvm::Function *> stackFunction;
 
-llvm::LLVMContext* Context;
-llvm::IRBuilder<>* Builder;
-llvm::Module* Module;
-llvm::Function* mainFunction;
+llvm::LLVMContext *Context;
+llvm::IRBuilder<> *Builder;
+llvm::Module *Module;
 
 static int currentinlinePos = 0;
-std::string ParseOptions (int argc , char* argv []);
+std::pair<std::string, std::string> ParseOptions(int argc, char *argv[]);
 
-class Printer
-{
-  public:
-  Printer ()
-  {
+class Printer {
+public:
+  Printer() {
     // @.str = constant [4 x i8] c"%d\0A\00", align 1
-    llvm::Type* PRINT_STRTy = llvm::ArrayType::get (
-      Builder->getInt8Ty () , 4);
-    Module->getOrInsertGlobal (".int_string" , PRINT_STRTy);
-    int_string = Module->getNamedGlobal (".int_string");
-    int_string->setLinkage (llvm::GlobalValue::InternalLinkage);
-    int_string->setAlignment (llvm::MaybeAlign (1));
-    int_string->setInitializer (llvm::ConstantDataArray::getString (*Context , "%d\n" , true));
+    llvm::Type *PRINT_STRTy = llvm::ArrayType::get(Builder->getInt8Ty(), 4);
+    Module->getOrInsertGlobal(".int_string", PRINT_STRTy);
+    int_string = Module->getNamedGlobal(".int_string");
+    int_string->setLinkage(llvm::GlobalValue::InternalLinkage);
+    int_string->setAlignment(llvm::MaybeAlign(1));
+    int_string->setInitializer(
+        llvm::ConstantDataArray::getString(*Context, "%d\n", true));
 
-    Module->getOrInsertGlobal (".char_string" , PRINT_STRTy);
-    char_string = Module->getNamedGlobal (".char_string");
-    char_string->setLinkage (llvm::GlobalValue::InternalLinkage);
-    char_string->setAlignment (llvm::MaybeAlign (1));
-    char_string->setInitializer (llvm::ConstantDataArray::getString (*Context , "%s\n" , true));
+    PRINT_STRTy = llvm::ArrayType::get(Builder->getInt8Ty(), 3);
+    Module->getOrInsertGlobal(".int_string_scan", PRINT_STRTy);
+    int_string_scan = Module->getNamedGlobal(".int_string_scan");
+    int_string_scan->setLinkage(llvm::GlobalValue::InternalLinkage);
+    int_string_scan->setAlignment(llvm::MaybeAlign(1));
+    int_string_scan->setInitializer(
+        llvm::ConstantDataArray::getString(*Context, "%d", true));
 
-    llvm::FunctionType* PrintfTy = llvm::FunctionType::get (
-    Builder->getInt32Ty () ,
-    llvm::ArrayRef<llvm::Type*>{} ,
-    true);
+    llvm::FunctionType *PrintfTy = llvm::FunctionType::get(
+        Builder->getInt32Ty(), llvm::ArrayRef<llvm::Type *>{}, true);
     llvm::FunctionCallee PrintfTyCallee =
-      Module->getOrInsertFunction ("printf" , PrintfTy);
-    llvm::FunctionType* PrintTy = llvm::FunctionType::get (
-        Builder->getVoidTy () ,
-        Builder->getInt32Ty () ,
-        false);
+        Module->getOrInsertFunction("printf", PrintfTy);
+    llvm::FunctionType *PrintTy = llvm::FunctionType::get(
+        Builder->getVoidTy(), Builder->getInt32Ty(), false);
 
-    int_print = llvm::Function::Create (
-        PrintTy , llvm::Function::ExternalLinkage , "__print_int" , Module);
-    llvm::BasicBlock* PrintBB =
-      llvm::BasicBlock::Create (*Context , "" , int_print);
-    Builder->SetInsertPoint (PrintBB);
-    llvm::Value* PrintArg = static_cast<llvm::Value*> (int_print->arg_begin ());
-    Builder->CreateCall (PrintfTyCallee , llvm::ArrayRef<llvm::Value*>{
-      int_string , PrintArg});
-    Builder->CreateRetVoid ();
+    int_print = llvm::Function::Create(PrintTy, llvm::Function::ExternalLinkage,
+                                       "__print_int", Module);
+    llvm::BasicBlock *PrintBB =
+        llvm::BasicBlock::Create(*Context, "", int_print);
+    Builder->SetInsertPoint(PrintBB);
+    llvm::Value *PrintArg = static_cast<llvm::Value *>(int_print->arg_begin());
+    Builder->CreateCall(PrintfTyCallee,
+                        llvm::ArrayRef<llvm::Value *>{int_string, PrintArg});
+    Builder->CreateRetVoid();
 
-    //llvm::FunctionType* PrintTy2 = llvm::FunctionType::get (
-    //Builder->getVoidTy () ,
-    //llvm::ArrayRef<llvm::Type*>{} ,
-    //true);
-    //char_print = llvm::Function::Create (
-    //PrintTy2 , llvm::Function::ExternalLinkage , "__print_char" , Module);
-    //llvm::BasicBlock* PrintBB2 =
-    //  llvm::BasicBlock::Create (*Context , "" , char_print);
-    //Builder->SetInsertPoint (PrintBB2);
-    //llvm::Value* PrintArg2 = static_cast<llvm::Value*> (char_print->arg_begin ());
-    //Builder->CreateCall (PrintfTyCallee , llvm::ArrayRef<llvm::Value*>{
-    //  char_string , PrintArg2});
-    //Builder->CreateRetVoid ();
+    PrintfTy = llvm::FunctionType::get(Builder->getInt32Ty(),
+                                       llvm::ArrayRef<llvm::Type *>{}, true);
+    llvm::FunctionCallee PrintfTyCalleeScan =
+        Module->getOrInsertFunction("__isoc99_scanf", PrintfTy);
+    PrintTy = llvm::FunctionType::get(Builder->getInt32Ty(), false);
+    int_scan = llvm::Function::Create(PrintTy, llvm::Function::ExternalLinkage,
+                                      "__scan_int", Module);
+    llvm::BasicBlock *PrintBBScan =
+        llvm::BasicBlock::Create(*Context, "", int_scan);
+    Builder->SetInsertPoint(PrintBBScan);
+    llvm::Value *Alloca = Builder->CreateAlloca(Builder->getInt32Ty(), 0, "");
+    Builder->CreateCall(PrintfTyCalleeScan,
+                        llvm::ArrayRef<llvm::Value *>{int_string_scan, Alloca});
+    llvm::Value *Load = Builder->CreateLoad(Alloca);
+    Builder->CreateRet(Load);
   }
 
-  private:
-  llvm::GlobalVariable* int_string = nullptr;
-  llvm::GlobalVariable* char_string = nullptr;
-  llvm::Function* int_print;
-  //llvm::Function* char_print;
+private:
+  llvm::GlobalVariable *int_string = nullptr;
+  llvm::GlobalVariable *int_string_scan = nullptr;
+  llvm::Function *int_print;
+  llvm::Function *int_scan;
 };
 
-int main (int argc , char* argv [])
-{
-  auto fileName = ParseOptions (argc , argv);
-  if (fileName.empty ())
+int main(int argc, char *argv[]) {
+  auto [fileName, outName] = ParseOptions(argc, argv);
+  if (fileName.empty())
     return 1;
 
-  FILE* f = fopen (fileName.data () , "r");
-  if (!f)
-  {
-    perror ("Cannot open file");
+  FILE *f = fopen(fileName.data(), "r");
+  if (!f) {
+    perror("Cannot open file");
     return 1;
   }
   yyin = f;
-  currentScope = create_scope ();
+  currentScope = create_scope();
 
   Context = new llvm::LLVMContext;
-  Module = new llvm::Module ("pcl.module" , *Context);
-  Builder = new llvm::IRBuilder<> (*Context);
+  Module = new llvm::Module("pcl.module", *Context);
+  Builder = new llvm::IRBuilder<>(*Context);
 
-  Printer ();
-
-  // prototype for scan function
-  llvm::FunctionType* FTScan = llvm::FunctionType::get (
-      llvm::Type::getInt32Ty (*Context) , /* va args? */ false);
-
-  llvm::Function::Create (FTScan , llvm::Function::ExternalLinkage , "__pcl_scan" ,
-                         Module);
+  Printer();
 
   // single __pcl_start function for void module
-  llvm::FunctionType* FT = llvm::FunctionType::get (
-      Builder->getInt32Ty () , /* va args? */ false);
+  llvm::FunctionType *FT =
+      llvm::FunctionType::get(Builder->getInt32Ty(), /* va args? */ false);
 
-  mainFunction = llvm::Function::Create (FT , llvm::Function::ExternalLinkage ,
-                                           "main" , Module);
+  stackFunction.push(llvm::Function::Create(FT, llvm::Function::ExternalLinkage,
+                                            "main", Module));
 
   // basic block to start instruction insertion
-  llvm::BasicBlock* BB =
-    llvm::BasicBlock::Create (*Context , "" , mainFunction);
-  Builder->SetInsertPoint (BB);
+  llvm::BasicBlock *BB =
+      llvm::BasicBlock::Create(*Context, "", stackFunction.top());
+  Builder->SetInsertPoint(BB);
 
-  yyparse ();
+  yyparse();
 
-  Builder->CreateRet (llvm::ConstantInt::get (Builder->getInt32Ty () , 0));
+  Builder->CreateRet(llvm::ConstantInt::get(Builder->getInt32Ty(), 0));
 
-  std::ostringstream s;
-  s << std::filesystem::path (fileName).filename ().string () << ".ll";
-
-  std::cout << "Saving module to: " << s.str () << "\n";
+  std::cout << "Saving module to: " << outName << "\n";
 
   std::error_code EC;
-  llvm::raw_fd_ostream outfile { s.str (), EC };
-  if (EC)
-  {
-    llvm::errs () << EC.message ().c_str () << "\n";
+  llvm::raw_fd_ostream outfile{outName, EC};
+  if (EC) {
+    llvm::errs() << EC.message().c_str() << "\n";
   }
 
-  Module->print (outfile , nullptr);
-  outfile.close ();
+  Module->print(outfile, nullptr);
+  outfile.close();
 
-  if (outfile.has_error ())
-  {
-    llvm::errs () << "Error printing to file: " << outfile.error ().message ()
-      << "\n";
+  if (outfile.has_error()) {
+    llvm::errs() << "Error printing to file: " << outfile.error().message()
+                 << "\n";
   }
 
-  fclose (f);
+  fclose(f);
 
   delete Builder;
   delete Context;
@@ -167,45 +152,46 @@ int main (int argc , char* argv [])
   return 0;
 }
 
-void PrintError (char const* errmsg)
-{
+void PrintError(char const *errmsg) {
   std::cerr << "Error: " << errmsg << " - Line " << yylineno << ", Column "
-    << currentinlinePos << std::endl;
-  exit (1);
+            << currentinlinePos << std::endl;
+  exit(1);
 }
 
-void BeginToken (char* t , int* yyinlinePos)
-{
+void BeginToken(char *t, int *yyinlinePos) {
   yylloc.first_line = yylineno;
   yylloc.first_column = *yyinlinePos;
   yylloc.last_line = yylineno;
-  *yyinlinePos += strlen (t);
+  *yyinlinePos += strlen(t);
   yylloc.last_column = *yyinlinePos;
 
   currentinlinePos = *yyinlinePos;
 }
 
-
 namespace po = boost::program_options;
-std::string ParseOptions (int argc , char* argv [])
-{
-  po::options_description desc ("Allowed options");
-  desc.add_options ()
-    ("help" , "Usage: ./pcl <file>.pcl");
-  desc.add_options ()
-    ("file,f" , po::value<std::string> () , "File to compile");
+
+std::pair<std::string, std::string> ParseOptions(int argc, char *argv[]) {
+  po::options_description desc("Allowed options");
+  desc.add_options()("help", "Usage: ./pcl <file>.pcl");
+  desc.add_options()("file,f", po::value<std::string>(), "File to compile");
+  desc.add_options()("output,o", po::value<std::string>(),
+                     "Where return binary");
 
   po::variables_map args;
-  po::store (
-      po::command_line_parser (argc , argv).options (desc).run () ,
-      args
-  );
-  po::notify (args);
+  po::store(po::command_line_parser(argc, argv).options(desc).run(), args);
+  po::notify(args);
 
-  if (args.count ("file"))
-    return  args["file"].as< std::string> ();
-  else
+  std::pair<std::string, std::string> out;
+  if (!args.count("file")) {
     std::cout << desc;
+    return out;
+  }
 
-  return std::string {};
+  out.first = args["file"].as<std::string>();
+  if (!args.count("output"))
+    out.second = out.first + ".ll";
+  else
+    out.second = args["output"].as<std::string>();
+
+  return out;
 }

@@ -1,0 +1,5 @@
+def foo {
+  ret 6;
+}
+
+print [foo];

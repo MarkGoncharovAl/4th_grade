@@ -1,0 +1,8 @@
+def foo | x y {
+  if x > y {
+    ret x;
+  }
+  ret y;
+}
+
+print [foo ? 7];

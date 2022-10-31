@@ -42,6 +42,10 @@ int         [0-9]+
                BeginToken(yytext, &yyinlinePos);
                return OUTPUT;
             }
+"ret"     {
+               BeginToken(yytext, &yyinlinePos);
+               return RET;
+            }
 "+"         {  BeginToken(yytext, &yyinlinePos); return PLUS;  }
 "-"         {  BeginToken(yytext, &yyinlinePos); return MINUS;  }
 "*"         {  BeginToken(yytext, &yyinlinePos); return MUL;  }
@@ -52,6 +56,7 @@ int         [0-9]+
 "]"         {  BeginToken(yytext, &yyinlinePos); return RBR;  }
 "{"         {  BeginToken(yytext, &yyinlinePos); return LCB;  }
 "}"         {  BeginToken(yytext, &yyinlinePos); return RCB;  }
+"|"         {  BeginToken(yytext, &yyinlinePos); return UP;  }
 ";"         {  BeginToken(yytext, &yyinlinePos); return SM;  }
 "="         {  BeginToken(yytext, &yyinlinePos); return ASG;  }
 "=="        {  BeginToken(yytext, &yyinlinePos);  

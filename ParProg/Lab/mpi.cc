@@ -13,17 +13,18 @@ struct data_t {
 
 int size = 0, rank = 0;
 
-void sequential1G(data_t &data) {
+void sequential1G1(data_t &data) {
   for (int i = 0; i < ISIZE; ++i)
     for (int j = 0; j < JSIZE; ++j)
       data[i][j] = 10 * i + j;
-
+}
+void sequential1G2 (data_t & data) {
   for (int i = 1; i < ISIZE; ++i)
     for (int j = 3; j < JSIZE; ++j)
       data[i][j] = std::sin(2 * data[i - 1][j - 3]);
 }
 
-void parallel1G(data_t &data) {
+void parallel1G1(data_t &data) {
   auto curSize = ISIZE / (size - 1);
 
   if (rank != mpi::rank_main) {
@@ -41,7 +42,8 @@ void parallel1G(data_t &data) {
 
   MPI_Barrier(MPI_COMM_WORLD); /* IMPORTANT */
   MPI_Bcast(data[0], SIZE, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
+}
+void parallel1G2 (data_t& data) {
   int cur2Size = (JSIZE - 3) / (size - 1);
   for (int i = 1; i < ISIZE; ++i) {
     if (rank != 0) {
@@ -89,9 +91,12 @@ int main() {
   auto copy1 = data;
   auto copy2 = data;
 
-  if (rank == mpi::rank_main)
-    sequential1G(copy1);
-  parallel1G(copy2);
+  if (rank == mpi::rank_main) {
+    sequential1G1(copy1);
+    sequential1G2 (copy1);
+  }
+  parallel1G1(copy2);
+  parallel1G2(copy2);
   if (rank == mpi::rank_main)
     if (compare(copy1, copy2))
       std::cout << "Algorithm works fine!\n";
@@ -104,14 +109,18 @@ int main() {
   auto startSeq = MPI_Wtime();
 
   if (rank == mpi::rank_main)
-    for (int i = 0; i < sizeTest; ++i)
-      sequential1G(data);
+    for (int i = 0; i < sizeTest; ++i) {
+      //sequential1G1(data);
+      sequential1G2 (data);
+    }
 
   MPI_Barrier(MPI_COMM_WORLD); /* IMPORTANT */
   auto endSeq = MPI_Wtime();
 
-  for (int i = 0; i < sizeTest; ++i)
-    parallel1G(data);
+  for (int i = 0; i < sizeTest; ++i) {
+    //parallel1G1(data);
+    parallel1G2(data);
+  }
 
   MPI_Barrier(MPI_COMM_WORLD); /* IMPORTANT */
   auto endPar = MPI_Wtime();

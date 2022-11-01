@@ -32,8 +32,10 @@ and compare the speed
 -------------------------------------------------------------
 Benchmark                   Time             CPU   Iterations
 -------------------------------------------------------------
-sequential2A_bench   30159496 ns     30151981 ns           22
-parallel2A_bench     12075646 ns     12037786 ns           57
+sequential2A1_bench   57953057 ns     57952553 ns           12
+sequential2A2_bench  560572392 ns    560560106 ns            1
+parallel2A1_bench     20719030 ns     20718393 ns           33
+parallel2A2_bench    111016468 ns    111011990 ns            6
 ```
 
 #### Метод оптимизации
@@ -47,11 +49,13 @@ parallel2A_bench     12075646 ns     12037786 ns           57
 
 Также в данном примере нельзя поменять местами внешний и внутренний циклы!
 
-#### Win **3.53** times
+#### Win **5.04** times
+
+In the basic cycle: **2.79** times.
 
 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|
-| 1.74 |  2.37 | 2.98  | 2.69  |  2.87  |  3.02  |  3.53  |
+| 1.91 |  2.79 | 3.65  | 3.4  |  4.01  |  4.56  |  5.04  |
 
 ## MPI
 
@@ -101,6 +105,9 @@ Time parallel: 0.0871089
 
 
 #### Win **1.21** times.
+
+1.25 times in the canonical cycle.
+1.14 times in the internection cycle.
 
 ## Conclusion
 

@@ -10,7 +10,7 @@ constexpr int ISIZE = 3000;
 constexpr int JSIZE = 3000;
 
 #ifndef THREADS
-#define THREADS 8
+#define THREADS 7
 #endif
 
 constexpr int max(int lhs, int rhs) { return lhs < rhs ? rhs : lhs; }
@@ -37,17 +37,18 @@ public:
   }
 };
 
-void sequential2A(std::vector<std::vector<double>> &data) {
+void sequential2A1(std::vector<std::vector<double>> &data) {
   for (int i = 0; i < ISIZE; ++i)
     for (int j = 0; j < JSIZE; ++j)
       data[i][j] = 10 * i + j;
-
+}
+void sequential2A2 (std::vector<std::vector<double>>& data) {
   for (int i = 0; i < ISIZE - 1; ++i)
     for (int j = 1; j < JSIZE; ++j)
       data[i][j] = std::sin(0.1 * data[i + 1][j - 1]);
 }
 
-void parallel2A(std::vector<std::vector<double>> &data) {
+void parallel2A1(std::vector<std::vector<double>> &data) {
   auto size = ISIZE / 8;
 #pragma omp parallel for num_threads(THREADS)
   for (int k = 0; k < 8; ++k) {
@@ -55,7 +56,8 @@ void parallel2A(std::vector<std::vector<double>> &data) {
       for (int j = 0; j < JSIZE; ++j)
         data[i][j] = 10 * i + j;
   }
-
+}
+void parallel2A2 (std::vector<std::vector<double>>& data) {
   for (int i = 0; i < ISIZE - 1; ++i) {
 #pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j < JSIZE; ++j) {
@@ -64,28 +66,50 @@ void parallel2A(std::vector<std::vector<double>> &data) {
   }
 }
 
-static void sequential2A_bench(benchmark::State &state) {
+static void sequential2A1_bench(benchmark::State &state) {
   auto data = Rand{}.getVector<double>(ISIZE, JSIZE);
   for (auto _ : state) {
     auto copy = data;
-    sequential2A(copy);
+    sequential2A1(copy);
   }
 }
-BENCHMARK(sequential2A_bench);
-static void parallel2A_bench(benchmark::State &state) {
+BENCHMARK(sequential2A1_bench);
+static void sequential2A2_bench (benchmark::State& state)
+{
+  auto data = Rand {}.getVector<double> (ISIZE , JSIZE);
+  for (auto _ : state)
+  {
+    auto copy = data;
+    sequential2A2 (copy);
+  }
+}
+BENCHMARK (sequential2A2_bench);
+static void parallel2A1_bench(benchmark::State &state) {
   auto data = Rand{}.getVector<double>(ISIZE, JSIZE);
   for (auto _ : state) {
     auto copy = data;
-    parallel2A(copy);
+    parallel2A1(copy);
   }
 }
-BENCHMARK(parallel2A_bench);
+BENCHMARK(parallel2A1_bench);
+static void parallel2A2_bench (benchmark::State& state)
+{
+  auto data = Rand {}.getVector<double> (ISIZE , JSIZE);
+  for (auto _ : state)
+  {
+    auto copy = data;
+    parallel2A2 (copy);
+  }
+}
+BENCHMARK (parallel2A2_bench);
 
 TEST(test, test1) {
   auto data = Rand{}.getVector<double>(ISIZE, JSIZE);
   auto copy = data;
-  sequential2A(data);
-  parallel2A(copy);
+  sequential2A1(data);
+  sequential2A2 (data);
+  parallel2A1(copy);
+  parallel2A2 (copy);
   for (int i = 0; i < ISIZE; ++i)
     for (int j = 0; j < JSIZE; ++j)
       ASSERT_DOUBLE_EQ(data[i][j], copy[i][j]);

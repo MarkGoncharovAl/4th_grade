@@ -42,9 +42,21 @@ int         [0-9]+
                BeginToken(yytext, &yyinlinePos);
                return OUTPUT;
             }
-"ret"     {
+"ret"       {
                BeginToken(yytext, &yyinlinePos);
                return RET;
+            }
+"init"      {
+               BeginToken(yytext, &yyinlinePos);
+               return INITARR;
+            }
+"set"       {
+               BeginToken(yytext, &yyinlinePos);
+               return SET;
+            }
+"get"       {
+               BeginToken(yytext, &yyinlinePos);
+               return GET;
             }
 "+"         {  BeginToken(yytext, &yyinlinePos); return PLUS;  }
 "-"         {  BeginToken(yytext, &yyinlinePos); return MINUS;  }
@@ -59,6 +71,7 @@ int         [0-9]+
 "|"         {  BeginToken(yytext, &yyinlinePos); return UP;  }
 ";"         {  BeginToken(yytext, &yyinlinePos); return SM;  }
 "="         {  BeginToken(yytext, &yyinlinePos); return ASG;  }
+"@"         {  BeginToken(yytext, &yyinlinePos); return DOG;  }
 "=="        {  BeginToken(yytext, &yyinlinePos);  
                yylval.set(Ops::Equal);
                return RELOP;

@@ -33,46 +33,37 @@ extern llvm::IRBuilder<> *Builder;
 extern std::stack<llvm::Function *> stackFunction;
 extern llvm::Module *Module;
 
-INode *make_value(int v) { return new Value{v}; }
-INode *make_op(INode *l, Ops o, INode *r) { return new Op{l, o, r}; }
-INode *make_while(INode *o, INode *s, llvm::Function *func) {
-  return new While{o, s, func};
-}
-INode *make_if(INode *cmp, INode *scope, llvm::Function *func) {
-  return new If{cmp, scope, func};
-}
-INode *make_def(const std::string &name, INode *call_names) {
-  return new Def{name, call_names};
-}
-void add_scope(INode *func, INode *sc) {
-  static_cast<Def *>(func)->setScope(sc);
-}
-INode *make_call(const std::string &name, IScope *scope, INode *storage) {
-  return new Call{name, scope, storage};
-}
-INode *make_ret(INode *rhs) { return new Ret{rhs}; }
-INode *make_names(std::string const &name) { return new Names{name}; }
-INode *make_storage(INode *node) { return new Storage(node); }
-INode *add_name(INode *names, std::string const &name) {
-
-  Names *objNames = static_cast<Names *>(names);
-  objNames->add(name);
-  return objNames;
-}
-INode *add_storage(INode *storage, INode *node) {
-  static_cast<Storage *>(storage)->add(node);
-  return storage;
-}
-IScope *create_scope() { return new Scope{nullptr}; }
-llvm::Function *create_function(INode *defNode) {
-  return static_cast<Def *>(defNode)->getFunc();
-}
-
+// ----------------------------------------------------
+// ------ Value ---------------------------------------
 llvm::Value *Value::codegen() {
   return llvm::ConstantInt::get(llvm::Type::getInt32Ty(*Context), val);
 }
 void Value::dump() const { std::cout << "Node Value: " << val << std::endl; }
 
+// ----------------------------------------------------
+// ------ Storage -------------------------------------
+llvm::Value *Storage::codegen() {
+  for (auto node : data)
+    values.push_back(node->codegen());
+  return nullptr;
+}
+void Storage::dump() const {
+  std::cout << "Storage:\n";
+  for (auto node : data)
+    node->dump();
+}
+void Storage::add(INode *node) { data.insert(data.begin(), node); }
+llvm::ArrayRef<llvm::Value *> Storage::getValues() const {
+  return llvm::ArrayRef(values);
+}
+
+// ----------------------------------------------------
+// ------ LLVMValue -----------------------------------
+llvm::Value *LLVMValue::codegen() { return val; }
+void LLVMValue::dump() const { val->print(llvm::errs()); }
+
+// ----------------------------------------------------
+// ------ Names ---------------------------------------
 llvm::Value *Names::codegen() {
   assert(0 && "Code of class Names must not be called!");
 }
@@ -83,6 +74,8 @@ void Names::dump() const {
   std::cout << "\n";
 }
 
+// ----------------------------------------------------
+// ------ Decl ----------------------------------------
 llvm::Value *Decl::codegen() {
   if (first_time) {
     first_time = false;
@@ -100,17 +93,69 @@ llvm::Value *Decl::assign(llvm::Value *RHS) {
 void Decl::dump() const { std::cout << "Node Decl: " << val << std::endl; }
 void Decl::SetValue(int Val) { val = Val; }
 
-// SCOPE
+// ----------------------------------------------------
+// ------ DeclArr -------------------------------------
+
+DeclArr::DeclArr(int def_size, std::string const &def_name)
+    : size(def_size), name(def_name) {}
+
+llvm::Value *DeclArr::codegen() {
+  alloca = Builder->CreateAlloca(
+      llvm::ArrayType::get(Builder->getInt32Ty(), size), 0, name.c_str());
+  return alloca;
+}
+llvm::Value *DeclArr::store(llvm::Value *idxVal, llvm::Value *storeVal) {
+  llvm::Value *init = llvm::ConstantInt::get(Builder->getInt32Ty(), 0);
+  llvm::Value *GEP =
+      Builder->CreateGEP(alloca, llvm::ArrayRef<llvm::Value *>{init, idxVal});
+  return Builder->CreateStore(storeVal, GEP);
+}
+llvm::Value *DeclArr::load(llvm::Value *idxVal) {
+  llvm::Value *init = llvm::ConstantInt::get(Builder->getInt32Ty(), 0);
+  llvm::Value *GEP =
+      Builder->CreateGEP(alloca, llvm::ArrayRef<llvm::Value *>{init, idxVal});
+  return Builder->CreateLoad(GEP);
+}
+void DeclArr::dump() const {
+  std::cout << "Declration of array. Size: " << size << " Name: " << name
+            << "\n";
+}
+
+// ----------------------------------------------------
+// ------ DeclArrOp -----------------------------------
+
+DeclArrOp::DeclArrOp(INode *def_decl, Ops def_op, INode *def_idx,
+                     INode *def_store)
+    : op(def_op), decl(cast<DeclArr>(def_decl)), idx(def_idx),
+      store(def_store) {
+  assert(idx && "Value must have valid idx!");
+}
+
+llvm::Value *DeclArrOp::codegen() {
+  llvm::Value *idxVal = idx->codegen();
+  switch (op) {
+  case Ops::Get:
+    return decl->load(idxVal);
+  case Ops::Set:
+    return decl->store(idxVal, store->codegen());
+  default:
+    break;
+  };
+  assert(0 &&
+         "Operation can't be produced with array! Allow only get and store!");
+}
+void DeclArrOp::dump() const {
+  std::cout << "Declaration operation node\n";
+  decl->dump();
+}
+
+// ----------------------------------------------------
+// ------ Scope ---------------------------------------
 llvm::Value *Scope::codegen() {
   for (auto x : branches)
     x->codegen();
   return nullptr;
 }
-llvm::Value *Ret::codegen() {
-  llvm::Value *retValue = ret->codegen();
-  return Builder->CreateRet(retValue);
-}
-void Ret::dump() const { std::cout << "Return statement:\n"; }
 
 void Scope::dump() const {
   std::cout << "Node Scope: " << std::endl;
@@ -131,15 +176,15 @@ INode *Scope::access(std::string const &var_name) {
 }
 
 INode *Scope::access(INode *names, INode *func) {
-  auto namesData = static_cast<Names *>(names);
-  llvm::Function *function = static_cast<Def *>(func)->getFunc();
+  auto namesData = cast<Names>(names);
+  llvm::Function *function = cast<Def>(func)->getFunc();
   auto args = function->arg_begin();
   auto namesStr = namesData->get();
   for (auto iter = namesStr.cbegin(); iter != namesStr.cend(); ++iter, ++args) {
-    Decl *decl = static_cast<Decl *>(access(*iter));
+    Decl *decl = cast<Decl>(access(*iter));
     addBranch(decl);
     llvm::Value *argument = static_cast<llvm::Value *>(args);
-    addBranch(make_op(decl, Ops::Assign, new LLVMValue(argument)));
+    addBranch(createNode<Op>(decl, Ops::Assign, new LLVMValue(argument)));
   }
   return names;
 }
@@ -166,8 +211,25 @@ INode *Scope::findFunc(const std::string &symbol) {
   return it->second;
 }
 
+INode *Scope::findArr(const std::string &symbol) {
+  auto it = arrays_.find(symbol);
+  if (it == arrays_.end()) {
+    if (prev_scope != nullptr)
+      return prev_scope->findArr(symbol);
+    else
+      return nullptr;
+  }
+  return it->second;
+}
+
 void Scope::addFunc(const std::string &name, INode *func) {
+  assert(!findFunc(name) && "Can't add the same symbol to the table!");
   funcs_[name] = func;
+}
+
+void Scope::addArray(std::string const &symbol, INode *decl) {
+  assert(!findArr(symbol) && "Can't add the same symbol to the table!");
+  arrays_[symbol] = decl;
 }
 
 Scope::~Scope() {
@@ -175,6 +237,16 @@ Scope::~Scope() {
     delete x;
 }
 
+// ----------------------------------------------------
+// ------ Ret -----------------------------------------
+llvm::Value *Ret::codegen() {
+  llvm::Value *retValue = ret->codegen();
+  return Builder->CreateRet(retValue);
+}
+void Ret::dump() const { std::cout << "Return statement:\n"; }
+
+// ----------------------------------------------------
+// ------ Op -----------------------------------------
 llvm::Value *Op::codegen() {
   llvm::Value *LeftV = nullptr;
   llvm::Value *RightV = nullptr;
@@ -200,7 +272,7 @@ llvm::Value *Op::codegen() {
   case Ops::LessEq:
     return Builder->CreateICmpSLE(LeftV, RightV);
   case Ops::Assign:
-    return static_cast<Decl *>(left)->assign(RightV);
+    return cast<Decl>(left)->assign(RightV);
   case Ops::StdOut: {
     auto *CalleeF = Module->getFunction("__print_int");
     assert(CalleeF && "Driver shall create decl for __print_int");
@@ -277,6 +349,8 @@ Op::~Op() {
     delete right;
 }
 
+// ----------------------------------------------------
+// ------ While -----------------------------------------
 llvm::Value *While::codegen() {
   llvm::BasicBlock *block_pre = llvm::BasicBlock::Create(*Context, "", func);
   llvm::BasicBlock *block_true = llvm::BasicBlock::Create(*Context, "", func);
@@ -289,8 +363,8 @@ llvm::Value *While::codegen() {
 
   Builder->SetInsertPoint(block_true);
   scope->codegen();
-  Builder->CreateBr(block_pre);
-
+  if (!block_true->getTerminator())
+    Builder->CreateBr(block_pre);
   Builder->SetInsertPoint(block_out);
   return ret;
 }
@@ -300,6 +374,8 @@ void While::dump() const {
   scope->dump();
 }
 
+// ----------------------------------------------------
+// ------ If -----------------------------------------
 llvm::Value *If::codegen() {
   llvm::BasicBlock *block_true = llvm::BasicBlock::Create(*Context, "", func);
   llvm::BasicBlock *block_out = llvm::BasicBlock::Create(*Context, "", func);
@@ -307,6 +383,8 @@ llvm::Value *If::codegen() {
   Builder->CreateCondBr(ret, block_true, block_out);
   Builder->SetInsertPoint(block_true);
   scope->codegen();
+  if (!block_true->getTerminator ())
+    Builder->CreateBr (block_out);
   Builder->SetInsertPoint(block_out);
   return ret;
 }
@@ -318,13 +396,17 @@ void If::dump() const {
   scope->dump();
 }
 
+// ----------------------------------------------------
+// ------ Def -----------------------------------------
 Def::Def(const std::string &def_name, INode *call_names)
     : name(def_name), scope(nullptr), func(nullptr) {
 
-  size_t sizeNames = static_cast<Names *>(call_names)->get().size();
-  std::vector<llvm::Type *> types;
-  for (size_t i = 0; i < sizeNames; ++i)
-    types.push_back(Builder->getInt32Ty());
+  std::vector<llvm::Type*> types;
+  if (call_names != nullptr) {
+    size_t sizeNames = cast<Names>(call_names)->get().size();
+    for (size_t i = 0; i < sizeNames; ++i)
+      types.push_back(Builder->getInt32Ty());
+  }
 
   llvm::FunctionType *FuncTy = llvm::FunctionType::get(
       Builder->getInt32Ty(), llvm::ArrayRef<llvm::Type *>(types), false);
@@ -346,10 +428,12 @@ void Def::dump() const {
   scope->dump();
 }
 
+// ----------------------------------------------------
+// ------ Call -----------------------------------------
 llvm::Value *Call::codegen() {
   INode *nodeFunction = scope->findFunc(name);
   assert(nodeFunction && "Function wasn't found!");
-  Def *defFunction = static_cast<Def *>(nodeFunction);
+  Def *defFunction = cast<Def>(nodeFunction);
   llvm::Function *function = defFunction->getFunc();
 
   if (!args) {

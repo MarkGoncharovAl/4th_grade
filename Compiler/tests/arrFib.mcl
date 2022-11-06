@@ -1,0 +1,26 @@
+def fib | x {
+  if x == 1 || x == 2 {
+    ret 1;
+  }
+  ret [fib x - 2] + [fib x - 1];
+}
+
+@init arr 10@
+
+idx = 0;
+while idx < 10 {
+  @ set arr idx idx + 2 @
+  idx = idx + 1;
+}
+
+idx = 0;
+while idx < 10 {
+  @ set arr idx [fib @ get arr idx @ ] @
+  idx = idx + 1;
+}
+
+idx = 0;
+while idx < 10 {
+  print @ get arr idx @;
+  idx = idx + 1;
+}

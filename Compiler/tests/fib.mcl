@@ -5,4 +5,4 @@ def fib | x {
   ret [fib x - 2] + [fib x - 1];
 }
 
-print [fib ?];
+print [fib 6];

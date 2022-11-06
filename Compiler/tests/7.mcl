@@ -5,4 +5,4 @@ def foo | x y {
   ret y;
 }
 
-print [foo ? 7];
+print [foo 5 7];

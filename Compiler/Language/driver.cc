@@ -22,7 +22,7 @@
 #include <fstream>
 #include <stack>
 
-IScope *currentScope = nullptr;
+IScope *currentScope = new Scope(nullptr);
 std::stack<llvm::Function *> stackFunction;
 
 llvm::LLVMContext *Context;
@@ -104,7 +104,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   yyin = f;
-  currentScope = create_scope();
 
   Context = new llvm::LLVMContext;
   Module = new llvm::Module("pcl.module", *Context);
@@ -172,7 +171,7 @@ namespace po = boost::program_options;
 
 std::pair<std::string, std::string> ParseOptions(int argc, char *argv[]) {
   po::options_description desc("Allowed options");
-  desc.add_options()("help", "Usage: ./pcl <file>.pcl");
+  desc.add_options()("help", "Usage: ./mcl <file>.mcl");
   desc.add_options()("file,f", po::value<std::string>(), "File to compile");
   desc.add_options()("output,o", po::value<std::string>(),
                      "Where return binary");

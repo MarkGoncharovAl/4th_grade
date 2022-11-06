@@ -1,0 +1,13 @@
+@init arr 7@
+
+x = 0;
+while x < 7 {
+  @set arr x x + 1@
+  x = x + 1;
+}
+
+x = 0;
+while x < 7 {
+  print @get arr x@;
+  x = x + 1;
+}

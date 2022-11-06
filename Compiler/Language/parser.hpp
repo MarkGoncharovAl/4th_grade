@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "INode.hpp"
+#include "Node.hpp"
 #include <cstdarg>
 #include <cstring>
 #include <sstream>

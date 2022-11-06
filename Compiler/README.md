@@ -1,28 +1,22 @@
 # Compiler project
 
-This project was created to practice my compiler knowledge
-
 ### Requirements
 
-SFML must be downloaded.
+SFML, CMake
 
 ### Build broject
 
-Just an ordinary cmake building
+```bash 
+mkdir build && cd build && cmake ../ && cmake --build .
+```
 
-```mkdir build && cd build && cmake ../ && cmake --build .```
+### Testsuite
 
-To build using my LLVM-generator
+```bash 
+cd build && ruby ../scripts/test.rb
+```
 
-``` make compile-llvm ```
-
-Yes, it's the worst makefile that you have ever seen :)
-
-### Explanation
-
-![Math explanation](Heating.jpg)
-
-### Language
+### Language reference
 
 To see examples, go to the **tests** folder.
 
@@ -98,3 +92,7 @@ while x < 7 {
 Set and init is completed expressions.
 
 Get is rvalue.
+
+### Graphics math
+
+![Math explanation](Heating.jpg)

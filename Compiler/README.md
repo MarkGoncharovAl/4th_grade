@@ -1,16 +1,43 @@
 # Compiler project
 
-### Requirements
+- [Compiler project](#compiler-project)
+    - [Build](#build)
+        - [Requirements](#requirements)
+        - [Configure](#configure)
+        - [Compilation](#compilation)
+        - [Testsuite](#testsuite)
+    - [Language reference](#language-reference)
+        - [Variables](#variables)
+        - [Stdin and stdout](#stdin-and-stdout)
+        - [If and while](#if-and-while)
+        - [Functions](#functions)
+        - [Arrays](#arrays)
+    - [Graphics math](#graphics-math)
 
-SFML, CMake
+### Build
+##### Requirements 
 
-### Build broject
+* SFML
+* CMake
+
+##### Configure
 
 ```bash 
-mkdir build && cd build && cmake ../ && cmake --build .
+mkdir build 
+cd build 
+cmake ../ 
+cmake --build .
 ```
 
-### Testsuite
+##### Compilation
+
+```bash 
+./mcl -f mcl-project.mcl -o mcl-out.ll
+clang mcl-out.ll
+./a.out
+```
+
+##### Testsuite
 
 ```bash 
 cd build && ruby ../scripts/test.rb

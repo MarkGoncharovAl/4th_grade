@@ -1,9 +1,9 @@
 # Software Requirements Specification
 ## Nucleus Memory Manager | Nov, 2022
 ---
-### Goncharov Mark - MIPT
-### Kuznetsova Margarita - MIPT
-### Shcherbakov Alexey - MIPT
+### [Goncharov Mark](https://github.com/MarkGoncharovAl) - MIPT
+### [Kuznetsova Margarita](https://github.com/Margarita-Kuznetsova) - MIPT
+### [Shcherbakov Alexey](https://github.com/pr0kuk) - MIPT
 ---
 # Content
 1. [Purpose](#purpose)

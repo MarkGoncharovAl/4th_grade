@@ -109,25 +109,36 @@ int main() {
   auto startSeq = MPI_Wtime();
 
   if (rank == mpi::rank_main)
-    for (int i = 0; i < sizeTest; ++i) {
-      //sequential1G1(data);
-      sequential1G2 (data);
-    }
+    for (int i = 0; i < sizeTest; ++i)
+      sequential1G1(data);
 
   MPI_Barrier(MPI_COMM_WORLD); /* IMPORTANT */
+  auto startSeq2 = MPI_Wtime ();
+
+  if (rank == mpi::rank_main)
+    for (int i = 0; i < sizeTest; ++i)
+      sequential1G2 (data);
+
+  MPI_Barrier (MPI_COMM_WORLD); /* IMPORTANT */
   auto endSeq = MPI_Wtime();
 
-  for (int i = 0; i < sizeTest; ++i) {
-    //parallel1G1(data);
-    parallel1G2(data);
-  }
+  for (int i = 0; i < sizeTest; ++i)
+    parallel1G1(data);
 
   MPI_Barrier(MPI_COMM_WORLD); /* IMPORTANT */
-  auto endPar = MPI_Wtime();
+  auto endPar1 = MPI_Wtime();
+
+  for (int i = 0; i < sizeTest; ++i)
+    parallel1G2 (data);
+
+  MPI_Barrier (MPI_COMM_WORLD); /* IMPORTANT */
+  auto endPar2 = MPI_Wtime ();
 
   if (rank == mpi::rank_main) {
-    std::cout << "Time sequential: " << (endSeq - startSeq) / sizeTest << "\n";
-    std::cout << "Time parallel: " << (endPar - endSeq) / sizeTest << "\n";
+    std::cout << "Time sequential1: " << (startSeq2 - startSeq) / sizeTest << "\n";
+    std::cout << "Time sequential2: " << (endSeq - startSeq2) / sizeTest << "\n";
+    std::cout << "Time parallel1: " << (endPar1 - endSeq) / sizeTest << "\n";
+    std::cout << "Time parallel2: " << (endPar2 - endPar1) / sizeTest << "\n";
   }
 
   quit();

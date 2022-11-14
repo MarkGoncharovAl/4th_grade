@@ -104,9 +104,9 @@ Time parallel: 0.0871089
 Поэтому был распараллелен внутренний цикл с барьерной оптимизацией.
 
 
-#### Win **1.21** times.
+#### Win **1.26** times.
 
-1.25 times in the canonical cycle.
+1.6 times in the canonical cycle.
 1.14 times in the internection cycle.
 
 ## Conclusion

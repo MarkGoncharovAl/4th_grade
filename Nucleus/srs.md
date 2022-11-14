@@ -37,8 +37,7 @@ During the execution of a binary translation, the intermediate representation ca
 ## System overview
 The memory manager is a C++ library that includes the Region class with which the user is able to allocate, use, and release memory as needed quickly and safely.
 ## References
-[1] IEEE Software Engineering Standards Committee, “IEEE Std 830-1998, IEEE Recommended
-Practice for Software Requirements Specifications”, October 20, 1998.
+[1] IEEE Software Engineering Standards Committee, “IEEE Std 830-1998, IEEE Recommended Practice for Software Requirements Specifications”, October 20, 1998.  
 [2] Davis M A, “Just Enough Requirements Management: Where Software Development Meets
 Marketing”, New York, Dorset House Publishing, 2005.
 
@@ -52,7 +51,7 @@ The system allocates memory.
 ### Write data
 The user selects a location for the recording.
 The user specifies the data to write.
-The system writes to the specified location, if possible.
+The system writes to the specified location if possible.
 ### Read data
 The user selects the location and type of data.
 The system provides data for the specified location.
@@ -68,15 +67,14 @@ The manager's work is limited by the physical size of the memory and the size al
 No external interfaces required.
 ## User interface
 Methods of Region class:
-
-        * allocate
-        * write
-        * read
-        * free
+* allocate
+* write
+* read
+* free
 ## Hardware interface
 No hardware interfaces required.
 ## Software interface
-C++20 STL.
+C++20 Standard Library and STL.
 ## Functional requirements
 ### ID: FR1
 TITLE: Download Nucleus MM  

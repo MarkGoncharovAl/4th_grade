@@ -94,13 +94,13 @@ DESC: Given that the memory is allocated, then the user should be able to write 
 RAT: In order for a user to write data.  
 DEP: FR2  
 
-### ID: FR3 
+### ID: FR4 
 TITLE: Read data  
 DESC: Given that the memory is allocated, then the user should be able to read data from the allocated space. The system should check the type compability and size of the allocation.  
 RAT: In order for a user to read data.  
 DEP: FR2  
 
-### ID: FR3 
+### ID: FR5 
 TITLE: Free memory  
 DESC: Given that the memory is allocated, then the user should be able to free the memory. The system should check the fact of allocation.  
 RAT: In order for a user to free memory.  

@@ -27,7 +27,7 @@
 # Purpose
 ## Definitions
 User: Someone who interacts with the Nucleus MM library  
-OS: Operating System
+OS: Operating System  
 STL: Standard Template Library of C++  
 DESC: Description  
 RAT: Rational  

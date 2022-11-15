@@ -1,12 +1,12 @@
-#include "include/nucleus.hpp"
+#include "include/nucleus.h"
 #include "gtest/gtest.h"
 
 TEST (test , doubleDelete)
 {
-  Region<int> data;
-  auto s1 = data.alloc(12);
-  data.free(s1);
-  data.free (s1);
+  auto s1 = Alloc();
+  //Check();
+  Free(s1);
+  Free (s1);
 }
 
 int main(int argc, char * argv[]) {

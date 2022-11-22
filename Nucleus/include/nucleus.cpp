@@ -53,13 +53,15 @@ reg Alloc ()
   return NULL;
 }
 
-void Free (reg curReg)
+ErrCode Free (reg curReg)
 {
   if (curReg) {
     errorCode = ErrCode::Non;
     free (curReg);
-    return;
   }
+  else
+    errorCode = ErrCode::FreeZero;
+  return errorCode;
 
   errorCode = ErrCode::FreeZero;
   dump ("Free(): Tried to free from nullptr memory" , Level::Info);

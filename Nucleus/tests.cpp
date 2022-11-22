@@ -5,8 +5,8 @@ TEST (test , doubleDelete)
 {
   auto s1 = Alloc();
   EXPECT_FALSE(s1 == NULL);
-  EXPECT_EQ((int)Free(s1), 0);
-  // EXPECT_EQ((int)Free(s1), 2);
+  EXPECT_EQ(Free(&s1), ErrCode::Non);
+  EXPECT_EQ(Free(&s1), ErrCode::FreeZero);
 }
 
 TEST(test, leak)
@@ -17,33 +17,33 @@ TEST(test, leak)
 
 TEST(test, free_null)
 {
-  EXPECT_EQ((int)Free(nullptr), 2);
+  EXPECT_EQ(Free(nullptr), ErrCode::FreeZero);
 }
 
 TEST(test, read_null)
 {
-  EXPECT_EQ(Read(nullptr), 3);
+  Read (nullptr);
+  EXPECT_EQ(Check(), ErrCode::ReadZero);
 }
 
 TEST(test, write_null)
 {
-  EXPECT_EQ((int)Write(nullptr, 24), 4);
+  EXPECT_EQ(Write(nullptr, 24), ErrCode::WriteZero);
 }
 
 TEST (test, read_freed)
 {
   auto s1 = Alloc();
-  //Check();
-  EXPECT_EQ((int)Free(s1), 0);
-  EXPECT_EQ(Read(s1), 3);
+  EXPECT_EQ(Free(&s1), ErrCode::Non);
+  Read (s1);
+  EXPECT_EQ(Check(), ErrCode::ReadZero);
 }
 
 TEST (test, write_freed)
 {
   auto s1 = Alloc();
-  //Check();
-  EXPECT_EQ((int)Free(s1), 0);
-  EXPECT_EQ((int)Write(s1, 24), 4);
+  EXPECT_EQ(Free(&s1), ErrCode::Non);
+  EXPECT_EQ(Write(s1, 24), ErrCode::WriteZero);
 }
 
 int main(int argc, char * argv[]) {

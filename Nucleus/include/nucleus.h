@@ -23,7 +23,7 @@ reg Alloc();
 /* ------------------------------------------
   Free region <curReg>
 ------------------------------------------ */
-ErrCode Free(reg curReg);
+ErrCode Free(reg *curReg);
 
 /* ------------------------------------------
   Get data from region <curReg>

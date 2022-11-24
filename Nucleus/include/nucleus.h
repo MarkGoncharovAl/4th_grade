@@ -1,19 +1,8 @@
 #pragma once
 #include <memory.h>
+#include "common.h"
 
 using reg = void*;
-
-/* ------------------------------------------
-  Error code processed by @check@ functions
------------------------------------------- */
-enum class ErrCode : int
-{
-  Non = 0 ,
-  AllocZero,
-  FreeZero,
-  ReadZero,
-  WriteZero
-};
 
 /* ------------------------------------------
   Create new region 32 bites
@@ -44,3 +33,9 @@ ErrCode Check();
   Check for local <err> error state
 ------------------------------------------ */
 void CheckCode(ErrCode err);
+
+/* ------------------------------------------
+  Get pointer to user or nullptr if data
+  is unavailable
+------------------------------------------ */
+void* Get(int code);

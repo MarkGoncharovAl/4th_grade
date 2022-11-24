@@ -1,11 +1,7 @@
 #pragma once
+#include "common.h"
 
-enum class Level : int
-{
-  Debug = 0 ,
-  Info = 1 ,
-  Release = 2
-};
+static ErrCode errorCode = ErrCode::Non;
 
 #ifndef DEBUG
 #ifndef INFO
@@ -26,4 +22,3 @@ constexpr int LEVEL = (int)Level::Release;
 #endif
 
 void dump (const char str [] , Level curLvl);
-

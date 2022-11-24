@@ -1,9 +1,8 @@
 #include "nucleus.h"
-#include "nucleusDetail.h"
+#include "nucleusDetail.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-
-static ErrCode errorCode = ErrCode::Non;
+#include <unordered_map>
 
 void dump (const char str[], Level curLvl) {
   if (LEVEL <= (int)curLvl)

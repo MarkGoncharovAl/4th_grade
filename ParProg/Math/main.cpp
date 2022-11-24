@@ -1,10 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <algorithm>
+#include <iterator>
 
-constexpr double a = 1000;
+constexpr double a = 1;
 constexpr double step = 0.1;
-constexpr size_t size = 20.0 / step - 2;
+constexpr size_t size = 1.0 / step - 2;
 
 double f(double data) {
   return a * (data - data * data * data);
@@ -72,7 +74,19 @@ vector operator * (const matrix& lhs , const vector& rhs)
   return out;
 }
 
+vector operator / (const vector& lhs , double rhs)
+{
+  vector out;
+  for (int i = 0; i < size; ++i)
+    out[i] = lhs[i] / rhs;
+  return out;
+}
 
+void dump(const vector &data, std::string comment = "") {
+  std::cout << comment << "\n";
+  std::copy(data.cbegin(), data.cend(), std::ostream_iterator<double>(std::cout , " "));
+  std::cout << "\n";
+}
 
 
 int main() {
@@ -80,5 +94,11 @@ int main() {
   auto Y = initY();
   auto F = calcF(Y);
   auto dif = F - A * Y;
-  
+  auto Y2 = Y - dif / 10.0; 
+  auto F2 = calcF (Y2);
+  auto dif2 = F2 - A * Y2;
+  auto Y3 = Y2 - dif2 / 10.0;
+  dump(Y, "Y");
+  dump (Y2, "Y2");
+  dump (Y3, "Y3");
 }

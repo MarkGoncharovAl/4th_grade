@@ -1,5 +1,6 @@
 #include "include/nucleus.h"
 #include "gtest/gtest.h"
+#include "include/nucleusNew.hpp"
 
 TEST (test , doubleDelete)
 {

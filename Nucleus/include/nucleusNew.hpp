@@ -9,7 +9,7 @@ class managerMemory_t
 {
   public:
   T* get (int code);
-  ErrCode free (int code);
+  ErrCode Free (int code);
   std::pair<int , T*> createNew ();
   ~managerMemory_t ();
 
@@ -64,7 +64,7 @@ std::pair<int , T*> managerMemory_t<T>::createNew ()
   return toUser;
 }
 template <typename T>
-ErrCode managerMemory_t<T>::free (int code)
+ErrCode managerMemory_t<T>::Free (int code)
 {
   auto it = globalTable.find (code);
   if (it == globalTable.end ())

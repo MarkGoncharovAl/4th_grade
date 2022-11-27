@@ -29,7 +29,7 @@ template <typename T>
 T* managerMemory_t<T>::get (int code)
 {
   auto it = globalTable.find (code);
-  if (it == globalTable.end ())
+  if (it != globalTable.end ())
   {
     errorCode = ErrCode::Non;
     return it->second;

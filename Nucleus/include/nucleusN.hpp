@@ -49,20 +49,10 @@ void* get (struct table* tb, struct index* in)
   return nullptr;
 }
 
-ErrCode destroy(struct table* tb)
-{
-  for (int i = 0; i < tb->ownersize; i++) {
-    free(tb->owner[i][0].pt);
-  }
-  free(tb->owner);
-  return ErrCode::Non;
-}
 struct index createNew (struct table* tb)
 {
-  for (int i = 0; i < tb->ownersize; i++)
-  {
-    for (int j = 0; j < callocsize; j++)
-    {
+  for (int i = 0; i < tb->ownersize; i++) {
+    for (int j = 0; j < callocsize; j++) {
         if (tb->owner[i][j].free == true) {
           tb->owner[i][j].free = false;
           tb->owner[i][j].gen+=1;
@@ -70,14 +60,8 @@ struct index createNew (struct table* tb)
         }
     } 
   }
-  tb->ownersize+=1;
-  char * tt = (char*)(malloc (callocsize * tb->cellsize));
-  for (int i = 0; i < callocsize*tb->cellsize; i++){
-    tt[i] = (int)0;
-    // std::cout << "calloc[" << i << "] = " << (int)tt[i] << std::endl;
-    // std::cout << (int*)(tt + i) << std::endl;
-  }
-  // std::cout << "CREATENEW " << tt << std::endl;
+  tb->ownersize += 1;
+  char * tt = (char*)(calloc(callocsize, tb->cellsize));
   for (int i = 0; i < callocsize; i+=1) {
     tb->owner[tb->ownersize-1][i] = {tt+i*tb->cellsize*STEP,0,true};}
   tb->owner[tb->ownersize-1][0].free = false;
@@ -85,25 +69,10 @@ struct index createNew (struct table* tb)
   return {tb->ownersize-1, 0, 0};
 }
 
-struct cell** init_owner()
-{
-  struct cell** owner = (struct cell**)malloc(OWNSIZE * sizeof(struct cell));
-  for (int i = 0; i < OWNSIZE; i++)
-    owner[i] = (struct cell*)calloc(callocsize, sizeof(struct cell));
-  return owner;
-}
-
-struct table init_table(int cellsize)
-{
-  return {init_owner(), 0, cellsize};
-}
-
 ErrCode Free(struct table* tb, struct index* in)
 {
-  int code1 = in->code1;
-  int code2 = in->code2;
-  int code3 = in->code3;
-  auto it = tb->owner[code1][code2];
+  int code1 = in->code1, code2 = in->code2, code3 = in->code3;
+  struct cell it = tb->owner[code1][code2];
   if (code1 < 0 || code1 >= tb->ownersize || code2 < 0 || code2 >= callocsize)
     return errorCode = ErrCode::FreeZero;
   if (it.gen != code3)
@@ -119,16 +88,13 @@ ErrCode check_bounds (struct table* tb)
 {
   for (int i = 0; i < tb->ownersize; i++) {
     for (int j = tb->cellsize; j < callocsize*tb->cellsize; j++) {
-        // std::cout << "mem[" << j << "] = " << (int)*((char*)tb->owner[i][0].pt + j) << std::endl;
-        // std::cout << (int*)((char*)tb->owner[i][0].pt + j) << std::endl;
       if (*((char*)tb->owner[i][0].pt + j) != (int)(0)) {
-        // std::cout << "OUTOFBOUDS\n";
-        return ErrCode::OutOfBounds;}
-        if (j % tb->cellsize == tb->cellsize - 1)
-          j+= tb->cellsize;
+        return ErrCode::OutOfBounds;
+      }
+      if (j % tb->cellsize == tb->cellsize - 1)
+        j += tb->cellsize;
     }
   }
-  // std::cout << "NOTOUTOFBOUDS\n";
   return ErrCode::Non;
 }
 #endif
@@ -146,4 +112,25 @@ struct index check_leaks(struct table* tb)
   }
   errorCode = ErrCode::Non;
   return {-1, -1, -1};
+}
+
+ErrCode destroy(struct table* tb)
+{
+  for (int i = 0; i < tb->ownersize; i++)
+    free(tb->owner[i][0].pt);
+  free(tb->owner);
+  return ErrCode::Non;
+}
+
+struct cell** init_owner()
+{
+  struct cell** owner = (struct cell**)malloc(OWNSIZE * sizeof(struct cell));
+  for (int i = 0; i < OWNSIZE; i++)
+    owner[i] = (struct cell*)calloc(callocsize, sizeof(struct cell));
+  return owner;
+}
+
+struct table init_table(int cellsize)
+{
+  return {init_owner(), 0, cellsize};
 }

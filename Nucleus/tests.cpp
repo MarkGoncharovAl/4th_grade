@@ -37,7 +37,7 @@ TEST(test, free_null)
   struct table tb = init_table(sizeof(int));
   struct index in1 = {1, 0, 0};
   struct index in2 = {0, 1, 0};
-  struct index in3 = {0, 0, 1};
+  struct index in3 = {0, 0, 2};
 
   EXPECT_EQ(Free(&tb, &in1), ErrCode::FreeZero);
   EXPECT_EQ(Free(&tb, &in2), ErrCode::FreeZero);
@@ -162,7 +162,7 @@ TEST (test, alloc)
   struct index in = createNew(&tb);
   EXPECT_EQ(in.code1, 0);
   EXPECT_EQ(in.code2, 0);
-  EXPECT_EQ(in.code3, 0);
+  EXPECT_EQ(in.code3, 1);
   #ifdef DEBUG
   EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
   #endif

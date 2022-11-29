@@ -29,7 +29,7 @@ void CheckCode (ErrCode err)
     dump ("Check(): Tried to free nullptr" , Level::Info);
     break;
   case ErrCode::ReadZero:
-    dump ("Check(): Tried to read from nullptr!" , Level::Info);
+    dump ("Check(): Tried to read from nullptr" , Level::Info);
     break;
   case ErrCode::WriteZero:
     dump ("Check(): Tried to write to nullptr!" , Level::Info);

@@ -14,16 +14,6 @@ TEST (test , doubleDelete)
   #endif
 }
 
-// ! TODO
-// TEST(test, leak)
-// {
-//   int* pt_out = nullptr;
-//   for (int i = 0; i < 1; i++) {
-//     managerMemory_t <int> A;
-//     auto pt = A.createNew();
-//     pt_out = pt.second;
-//   }
-// }
 #ifdef DEBUG
 TEST (test, write_out_of_bounds)
 {
@@ -57,7 +47,6 @@ TEST(test, get_null)
   EXPECT_EQ(A.check_bounds(), ErrCode::Non);
   #endif
 }
-
 
 TEST (test, get_freed)
 {
@@ -115,7 +104,6 @@ TEST (test, many_writes)
   #endif
 }
 
-
 TEST (test, alloc)
 {
   managerMemory_t <int> A;
@@ -135,6 +123,18 @@ TEST (test, free)
   #ifdef DEBUG
   EXPECT_EQ(A.check_bounds(), ErrCode::Non);
   #endif
+}
+
+// ! TODO
+TEST(test, leak)
+{
+  int* pt_out = nullptr;
+  for (int i = 0; i < 1; i++) {
+    managerMemory_t <int> A;
+    auto pt = A.createNew();
+    pt_out = pt.second;
+  }
+  EXPECT_EQ(Check(), ErrCode::Non);
 }
 
 int main(int argc, char * argv[]) {

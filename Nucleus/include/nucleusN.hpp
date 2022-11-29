@@ -1,7 +1,5 @@
 #pragma once
 #include <iostream>
-#include <unordered_map>
-#include <vector>
 #include "nucleusDetail.hpp"
 #define MAXINT 1 << 31
 #define callocsize 1024

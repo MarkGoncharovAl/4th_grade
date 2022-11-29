@@ -5,7 +5,7 @@
 TEST (test , doubleDelete)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   EXPECT_EQ(Free(&tb, &in), ErrCode::Non);
   EXPECT_EQ(Free(&tb, &in), ErrCode::FreeZero);
   check_leaks(&tb);
@@ -20,7 +20,7 @@ TEST (test , doubleDelete)
 TEST (test, write_out_of_bounds)
 {
   struct table tb = init_table(sizeof(char));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   EXPECT_EQ(Check(), ErrCode::Non);
   void* pt = get(&tb, &in);
   EXPECT_EQ(Check(), ErrCode::Non);
@@ -43,7 +43,7 @@ TEST(test, free_null)
   EXPECT_EQ(Free(&tb, &in2), ErrCode::FreeZero);
   EXPECT_EQ(Free(&tb, &in3), ErrCode::FreeZero);
 
-  struct index in4 = createNew(&tb);
+  struct index in4 = allocate(&tb);
   EXPECT_EQ(Free(&tb, &in3), ErrCode::WrongGen);
   EXPECT_EQ(Free(&tb, &in4), ErrCode::Non);
   #ifdef DEBUG
@@ -80,7 +80,7 @@ TEST(test, get_null)
 TEST (test, get_freed)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   EXPECT_EQ(Free(&tb, &in), ErrCode::Non);
   void* pt = get(&tb, &in);
   EXPECT_EQ(Check(), ErrCode::GetZero);
@@ -96,7 +96,7 @@ TEST (test, get_freed)
 TEST (test, get)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   void* pt = get(&tb, &in);
   EXPECT_EQ(Check(), ErrCode::Non);
   EXPECT_FALSE(pt == nullptr);
@@ -111,7 +111,7 @@ TEST (test, get)
 TEST (test, write_read)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   int* pt = (int*)get(&tb, &in);
   EXPECT_EQ(Check(), ErrCode::Non);
   EXPECT_FALSE(pt == nullptr);
@@ -129,10 +129,10 @@ TEST (test, write_read)
 TEST (test, many_writes)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in1 = createNew(&tb);
-  struct index in2 = createNew(&tb);
-  struct index in3 = createNew(&tb);
-  struct index in4 = createNew(&tb);
+  struct index in1 = allocate(&tb);
+  struct index in2 = allocate(&tb);
+  struct index in3 = allocate(&tb);
+  struct index in4 = allocate(&tb);
 
   int* pt1 = (int*)get(&tb, &in1);
   EXPECT_EQ(Check(), ErrCode::Non);
@@ -159,7 +159,7 @@ TEST (test, many_writes)
 TEST (test, alloc)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   EXPECT_EQ(in.code1, 0);
   EXPECT_EQ(in.code2, 0);
   EXPECT_EQ(in.code3, 1);
@@ -174,7 +174,7 @@ TEST (test, alloc)
 TEST (test, free)
 {
   struct table tb = init_table(sizeof(int));
-  struct index in = createNew(&tb);
+  struct index in = allocate(&tb);
   EXPECT_EQ(Free(&tb, &in), ErrCode::Non);
   #ifdef DEBUG
   EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
@@ -187,7 +187,7 @@ TEST (test, free)
 TEST(test, leak)
 {
   struct table tb = init_table(sizeof(int));
-  createNew(&tb);
+  allocate(&tb);
   EXPECT_EQ(Check(), ErrCode::Non);
   check_leaks(&tb);
   EXPECT_EQ(Check(), ErrCode::Leaks);

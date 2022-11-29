@@ -1,5 +1,11 @@
 #pragma once
-#include "common.h"
+
+enum class Level: int
+{
+  Debug = 0 ,
+  Info = 1 ,
+  Release = 2
+};
 
 #ifndef DEBUG
 #ifndef INFO
@@ -19,4 +25,21 @@ constexpr int LEVEL = (int)Level::Info;
 constexpr int LEVEL = (int)Level::Release;
 #endif
 
+/* ------------------------------------------
+  Error code processed by @check@ functions
+------------------------------------------ */
+enum class ErrCode: int
+{
+  Non = 0 ,
+  GetZero ,
+  AllocZero ,
+  FreeZero ,
+  ReadZero ,
+  WriteZero ,
+  OutOfBounds ,
+  WrongGen ,
+  Leaks
+};
+
+ErrCode Check();
 void dump (const char str [] , Level curLvl);

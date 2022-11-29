@@ -34,6 +34,9 @@ void CheckCode (ErrCode err)
   case ErrCode::WriteZero:
     dump ("Check(): Tried to write to nullptr!" , Level::Info);
     break;
+  case ErrCode::OutOfBounds:
+    dump ("Check(): Tried to write out of bounds" , Level::Info);
+    break;
   default:
     dump ("Check(): There is no appropriate processing error! Check ErrCode enum and process it correctly" , Level::Info);
     break;

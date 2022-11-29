@@ -10,7 +10,8 @@ enum class ErrCode: int
   AllocZero ,
   FreeZero ,
   ReadZero ,
-  WriteZero
+  WriteZero ,
+  OutOfBounds
 };
 
 enum class Level: int

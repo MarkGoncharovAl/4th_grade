@@ -4,14 +4,16 @@
 #include <vector>
 #include "nucleusDetail.hpp"
 #define MAXINT 1 << 31
-#define callocsize 8
+#define callocsize 1024
+#define OWNSIZE 1024
+
 #ifdef DEBUG
 #define STEP 2
 #endif
 #ifndef DEBUG
 #define STEP 1
 #endif
-#define OWNSIZE 1024
+
 extern ErrCode errorCode;
 
 struct index

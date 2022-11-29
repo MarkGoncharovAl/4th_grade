@@ -12,6 +12,8 @@
 #define STEP 1
 #endif
 #define OWNSIZE 1024
+extern ErrCode errorCode;
+
 struct index
 {
   int code1;
@@ -74,9 +76,10 @@ struct index createNew (struct table* tb)
     // std::cout << (int*)(tt + i) << std::endl;
   }
   // std::cout << "CREATENEW " << tt << std::endl;
-  for (int i = 0; i < callocsize; i+=STEP) {
-    tb->owner[tb->ownersize-1][i] = {tt+i*tb->cellsize,0,true};}
+  for (int i = 0; i < callocsize; i+=1) {
+    tb->owner[tb->ownersize-1][i] = {tt+i*tb->cellsize*STEP,0,true};}
   tb->owner[tb->ownersize-1][0].free = false;
+  errorCode = ErrCode::Non;
   return {tb->ownersize-1, 0, 0};
 }
 
@@ -113,7 +116,6 @@ ErrCode Free(struct table* tb, struct index* in)
 ErrCode check_bounds (struct table* tb)
 {
   for (int i = 0; i < tb->ownersize; i++) {
-    //char* t = (char*)(tb->owner[j]);
     for (int j = tb->cellsize; j < callocsize*tb->cellsize; j++) {
         // std::cout << "mem[" << j << "] = " << (int)*((char*)tb->owner[i][0].pt + j) << std::endl;
         // std::cout << (int*)((char*)tb->owner[i][0].pt + j) << std::endl;
@@ -128,3 +130,18 @@ ErrCode check_bounds (struct table* tb)
   return ErrCode::Non;
 }
 #endif
+
+struct index check_leaks(struct table* tb)
+{
+  for (int i = 0; i < tb->ownersize; i++)
+  {
+    for (int j = 0; j < callocsize; j++)
+    {
+      if (tb->owner[i][j].free == false) {
+        errorCode = ErrCode::Leaks;
+        return {i,j,tb->owner[i][j].gen};}
+    }
+  }
+  errorCode = ErrCode::Non;
+  return {-1, -1, -1};
+}

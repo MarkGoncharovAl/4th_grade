@@ -74,7 +74,7 @@ struct index createNew (struct table* tb)
   char * tt = (char*)(malloc (callocsize * tb->cellsize));
   for (int i = 0; i < callocsize*tb->cellsize; i++){
     tt[i] = (int)0;
-        // std::cout << "calloc[" << i << "] = " << (int)tt[i] << std::endl;
+    // std::cout << "calloc[" << i << "] = " << (int)tt[i] << std::endl;
     // std::cout << (int*)(tt + i) << std::endl;
   }
   // std::cout << "CREATENEW " << tt << std::endl;

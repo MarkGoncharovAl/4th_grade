@@ -4,8 +4,13 @@
 #include <vector>
 #include "nucleusDetail.hpp"
 #define MAXINT 1 << 31
-#define callocsize 32
+#define callocsize 8
+#ifdef DEBUG
+#define STEP 2
+#endif
+#ifndef DEBUG
 #define STEP 1
+#endif
 #define OWNSIZE 1024
 struct index
 {
@@ -39,6 +44,15 @@ void* get (struct table* tb, struct index* in)
   errorCode = ErrCode::GetZero;
   return nullptr;
 }
+
+ErrCode destroy(struct table* tb)
+{
+  for (int i = 0; i < tb->ownersize; i++) {
+    free(tb->owner[i][0].pt);
+  }
+  free(tb->owner);
+  return ErrCode::Non;
+}
 struct index createNew (struct table* tb)
 {
   for (int i = 0; i < tb->ownersize; i++)
@@ -53,7 +67,13 @@ struct index createNew (struct table* tb)
     } 
   }
   tb->ownersize+=1;
-  short * tt = (short*)(calloc (callocsize , tb->cellsize));
+  char * tt = (char*)(malloc (callocsize * tb->cellsize));
+  for (int i = 0; i < callocsize*tb->cellsize; i++){
+    tt[i] = (int)0;
+        // std::cout << "calloc[" << i << "] = " << (int)tt[i] << std::endl;
+    // std::cout << (int*)(tt + i) << std::endl;
+  }
+  // std::cout << "CREATENEW " << tt << std::endl;
   for (int i = 0; i < callocsize; i+=STEP) {
     tb->owner[tb->ownersize-1][i] = {tt+i*tb->cellsize,0,true};}
   tb->owner[tb->ownersize-1][0].free = false;
@@ -88,3 +108,23 @@ ErrCode Free(struct table* tb, struct index* in)
   tb->owner[code1][code2].free = true;
   return errorCode = ErrCode::Non;
 }
+
+#ifdef DEBUG
+ErrCode check_bounds (struct table* tb)
+{
+  for (int i = 0; i < tb->ownersize; i++) {
+    //char* t = (char*)(tb->owner[j]);
+    for (int j = tb->cellsize; j < callocsize*tb->cellsize; j++) {
+        // std::cout << "mem[" << j << "] = " << (int)*((char*)tb->owner[i][0].pt + j) << std::endl;
+        // std::cout << (int*)((char*)tb->owner[i][0].pt + j) << std::endl;
+      if (*((char*)tb->owner[i][0].pt + j) != (int)(0)) {
+        // std::cout << "OUTOFBOUDS\n";
+        return ErrCode::OutOfBounds;}
+        if (j % tb->cellsize == tb->cellsize - 1)
+          j+= tb->cellsize;
+    }
+  }
+  // std::cout << "NOTOUTOFBOUDS\n";
+  return ErrCode::Non;
+}
+#endif

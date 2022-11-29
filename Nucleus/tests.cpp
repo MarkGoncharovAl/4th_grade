@@ -8,21 +8,26 @@ TEST (test , doubleDelete)
   struct index in = createNew(&tb);
   EXPECT_EQ(Free(&tb, &in), ErrCode::Non);
   EXPECT_EQ(Free(&tb, &in), ErrCode::FreeZero);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
-// #ifdef DEBUG
-// TEST (test, write_out_of_bounds)
-// {
-//   managerMemory_t <char> A;
-//   std::pair<int, char*> pt = A.createNew();
-//   int* pt2 = (int*)A.get(pt.first);
-//   EXPECT_EQ(Check(), ErrCode::Non);
-//   EXPECT_FALSE(pt2 == nullptr);
-//   EXPECT_EQ((char*)pt2, pt.second);
-//   *(pt2) = 2022;
-//   EXPECT_EQ(A.check_bounds(), ErrCode::OutOfBounds);
-// }
-// #endif
+#ifdef DEBUG
+TEST (test, write_out_of_bounds)
+{
+  struct table tb = init_table(sizeof(char));
+  struct index in = createNew(&tb);
+  void* pt = get(&tb, &in);
+  // EXPECT_EQ(Check(), ErrCode::Non);
+  EXPECT_FALSE(pt == nullptr);
+  int* pt2 = (int*)pt;
+  *(pt2) = (int)MAXINT;
+  EXPECT_EQ(check_bounds(&tb), ErrCode::OutOfBounds);
+  destroy(&tb);
+}
+#endif
 
 TEST(test, free_null)
 {
@@ -38,6 +43,10 @@ TEST(test, free_null)
   struct index in4 = createNew(&tb);
   EXPECT_EQ(Free(&tb, &in3), ErrCode::WrongGen);
   EXPECT_EQ(Free(&tb, &in4), ErrCode::Non);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST(test, get_null)
@@ -55,6 +64,10 @@ TEST(test, get_null)
   void * pt3 = get(&tb,&in3);
   // EXPECT_EQ(Check(), ErrCode::GetZero);
   EXPECT_EQ(pt3, nullptr);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, get_freed)
@@ -65,6 +78,10 @@ TEST (test, get_freed)
   void* pt = get(&tb, &in);
   // EXPECT_EQ(Check(), ErrCode::GetZero);
   EXPECT_EQ(pt, nullptr);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, get)
@@ -74,6 +91,10 @@ TEST (test, get)
   void* pt = get(&tb, &in);
   // EXPECT_EQ(Check(), ErrCode::Non);
   EXPECT_FALSE(pt == nullptr);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, write_read)
@@ -86,6 +107,10 @@ TEST (test, write_read)
   *(pt) = 2022;
   int i = *(pt);
   EXPECT_EQ(i, 2022);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, many_writes)
@@ -105,6 +130,10 @@ TEST (test, many_writes)
   *(pt2) = 2026;
   *(pt3) = 2031;
   *(pt4) = 2048;
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, alloc)
@@ -114,6 +143,10 @@ TEST (test, alloc)
   EXPECT_EQ(in.code1, 0);
   EXPECT_EQ(in.code2, 0);
   EXPECT_EQ(in.code3, 0);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 TEST (test, free)
@@ -121,6 +154,10 @@ TEST (test, free)
   struct table tb = init_table(sizeof(int));
   struct index in = createNew(&tb);
   EXPECT_EQ(Free(&tb, &in), ErrCode::Non);
+  #ifdef DEBUG
+  EXPECT_EQ(check_bounds(&tb), ErrCode::Non);
+  #endif
+  destroy(&tb);
 }
 
 // // ! TODO

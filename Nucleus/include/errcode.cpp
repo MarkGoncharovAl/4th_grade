@@ -5,7 +5,6 @@ void dump (const char str[], Level curLvl) {
     printf("%s\n", str);
 }
 
-
 void CheckCode (ErrCode err)
 {
   switch (err)
@@ -36,7 +35,6 @@ void CheckCode (ErrCode err)
     break;
   }
 }
-
 
 enum ErrCode Check ()
 {

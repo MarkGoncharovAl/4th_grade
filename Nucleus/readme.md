@@ -10,6 +10,9 @@
 
 
 # Use
+To use nucleus lib include header to your source file:
+
+    #include "nucleusN.hpp"
 ## Structures description
 `table` - A structure that is a parameter to all functions.  
 The table stores all pointers to the data.  

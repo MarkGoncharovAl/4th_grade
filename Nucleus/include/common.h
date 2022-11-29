@@ -1,5 +1,4 @@
 #pragma once
-
 /* ------------------------------------------
   Error code processed by @check@ functions
 ------------------------------------------ */
@@ -12,8 +11,12 @@ enum class ErrCode: int
   ReadZero ,
   WriteZero ,
   OutOfBounds ,
-  WrongGen
+  WrongGen ,
+  Leaks
 };
+
+ErrCode Check();
+
 
 enum class Level: int
 {

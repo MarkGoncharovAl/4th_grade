@@ -1,5 +1,7 @@
 #include "nucleusDetail.hpp"
 #include <stdio.h>
+ErrCode errorCode = ErrCode::Non;
+
 void dump (const char str[], Level curLvl) {
   if (LEVEL <= (int)curLvl)
     printf("%s\n", str);
@@ -29,6 +31,9 @@ void CheckCode (ErrCode err)
     break;
   case ErrCode::WrongGen:
     dump ("Check(): Tried to get wrong gen" , Level::Info);
+    break;
+  case ErrCode::Leaks:
+    dump ("Check(): There is unfreed memory" , Level::Info);
     break;
   default:
     dump ("Check(): There is no appropriate processing error! Check ErrCode enum and process it correctly" , Level::Info);

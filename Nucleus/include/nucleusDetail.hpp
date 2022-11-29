@@ -1,8 +1,6 @@
 #pragma once
 #include "common.h"
 
-static ErrCode errorCode = ErrCode::Non;
-
 #ifndef DEBUG
 #ifndef INFO
 #ifndef RELEASE

@@ -11,7 +11,8 @@ enum class ErrCode: int
   FreeZero ,
   ReadZero ,
   WriteZero ,
-  OutOfBounds
+  OutOfBounds ,
+  WrongGen
 };
 
 enum class Level: int

@@ -8,5 +8,5 @@ set (CMAKE_CXX_FLAGS    "-Wall -std=c++2a -DDEBUG")
 
 find_package (GTest REQUIRED)
 
-add_executable (${PROJECT_NAME} tests.cpp include/nucleus.cpp)
+add_executable (${PROJECT_NAME} tests.cpp include/errcode.cpp)
 target_link_libraries (${PROJECT_NAME} Threads::Threads ${GTEST_BOTH_LIBRARIES})

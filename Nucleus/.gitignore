@@ -3,3 +3,4 @@ nucleus
 Makefile
 CMakeFiles/
 CMakeCache.txt
+.vscode/

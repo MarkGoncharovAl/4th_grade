@@ -13,9 +13,13 @@
 #ifndef SIZE
 #define SIZE 400
 #endif
+#ifndef B
+#define B 1
+#endif
 
 constexpr double step = 1.0 / SIZE;
 constexpr size_t size = SIZE;
+constexpr double b = B;
 
 double f (double data);
 double rightSizeIn (double lhs , double mid , double rhs);

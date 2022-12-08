@@ -1,5 +1,13 @@
 #include "common.hpp"
 
+void dump2 (const vector& data)
+{
+  for (int i = 0; i < size; ++i)
+    std::cout << i << " " << data[i] << "\n";
+}
+
+constexpr bool printDump = true;
+
 int main() {
   
   // To show how algorithm works
@@ -15,9 +23,17 @@ int main() {
     auto F = Seq::calcF (Y);
     auto dif = Seq::Minus(F , Seq::Mult (A , Y));
     Y = Seq::Plus (Y , Seq::Div (Seq::Mult (A_1 , dif) , 10));
-    mer = dumpMer (dif , std::to_string (curIter));
+    if (printDump)
+      mer = dumpMer (dif , std::to_string (curIter));
+    else
+      mer = Seq::dumpMer(dif);
     curIter++;
   }
+
+  if (printDump)
+    dump(Y, "solution");
+  else
+    dump2(Y);
   // -----------------------------
 
   // To measure sequential work
@@ -38,8 +54,10 @@ int main() {
     ++curIter;
   }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now ();
-  std::cout << "Sequential time : " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count () << "[µs]" << std::endl;
-  std::cout << "Used " << curIter << " iterations\n";
+  if (printDump) {
+    std::cout << "Sequential time : " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count () << "[µs]" << std::endl;
+    std::cout << "Used " << curIter << " iterations\n";
+  }
   // -----------------------------
 
   // To measure parallel work
@@ -60,7 +78,9 @@ int main() {
     ++curIter;
   }
   end = std::chrono::steady_clock::now ();
-  std::cout << "Parallel time : " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count () << "[µs]" << std::endl;
-  std::cout << "Used " << curIter << " iterations\n";
+  if (printDump) {
+    std::cout << "Parallel time : " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count () << "[µs]" << std::endl;
+    std::cout << "Used " << curIter << " iterations\n";
+  }
   // -----------------------------
 }

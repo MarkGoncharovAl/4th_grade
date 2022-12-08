@@ -73,8 +73,10 @@ vector initY ()
   std::mt19937 rng (dev ());
   std::uniform_int_distribution<std::mt19937::result_type> dist6 (1 , 20);
   vector Y (size);
-  for (auto& y : Y)
-    y = 0.9999 + (double)dist6 (rng) / 100000.0;
+  double small_step = (b - 1) / (size + 1);
+  for (int i = 0; i < size; ++i) {
+    Y[i] = 0.9999 + small_step * (i + 1) + (double)dist6 (rng) / 100000.0;
+  }
   return Y;
 }
 
@@ -107,7 +109,7 @@ namespace Seq
   {
     vector F (size);
     F[0] = rightSize (1.0 , vec[0] , vec[1]) - 1.0 / (step * step);
-    F[size - 1] = rightSize (vec[size - 2] , vec[size - 1] , 1.0) - 1.0 / (step * step);
+    F[size - 1] = rightSize (vec[size - 2] , vec[size - 1] , 1.0) - b / (step * step);
     for (int i = 1; i < size - 1; ++i)
     {
       F[i] = rightSize (vec[i - 1] , vec[i] , vec[i + 1]);
@@ -173,7 +175,7 @@ namespace Par
         F[i] = rightSize (vec[i - 1] , vec[i] , vec[i + 1]);
     }
     F[0] = rightSize (1.0 , vec[0] , vec[1]) - 1.0 / (step * step);
-    F[size - 1] = rightSize (vec[size - 2] , vec[size - 1] , 1.0) - 1.0 / (step * step);
+    F[size - 1] = rightSize (vec[size - 2] , vec[size - 1] , 1.0) - b / (step * step);
     return F;
   }
 

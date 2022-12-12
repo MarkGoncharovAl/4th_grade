@@ -1,0 +1,65 @@
+@init pixels 90000@
+
+def initPixels {
+  SzH = 300;
+  ColorPixel = 2560;
+  MaxColor = ColorPixel * 5 - 1;
+  idx = 0;
+  while idx < SzH {
+    @set pixels idx (MaxColor * idx / SzH)@
+    @set pixels (SzH * (SzH - 1) + idx) (MaxColor - MaxColor * idx / SzH)@
+    idx = idx + 1;
+  }
+
+  idx = 0;
+  while idx < SzH {
+    @set pixels (SzH * idx) (MaxColor * idx / SzH)@
+    @set pixels (SzH - 1 + SzH * idx) (MaxColor - MaxColor * idx / SzH)@
+    idx = idx + 1;
+  }
+
+  i = 1;
+  j = 1;
+  while i < SzH - 1 {
+    while j < SzH - 1 {
+      @set pixels (SzH * i + j) 0@
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+}
+
+def updatePixels {
+  SzH = 300;
+  ColorPixel = 2560;
+  Speed = 5;
+  MaxColor = ColorPixel * 5 - 1;
+  
+  i = 1;
+  j = 1;
+  while i < SzH - 1 {
+    while j < SzH - 1 {
+      p00 = @get pixels (i * SzH + j)@;
+      p_10 = @get pixels ((i - 1) * SzH + j)@;
+      p0_1 = @get pixels (i * SzH + j - 1)@;
+      p10 = @get pixels ((i + 1) * SzH + j)@;
+      p01 = @get pixels (i * SzH + j + 1)@;
+      @set pixels (SzH * i + j) 
+        p00 + (
+          p_10 + p0_1 + p10 + p01 - 4 * p00
+        ) / Speed @
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+
+  i = 1;
+  j = 1;
+  while i < SzH - 1 {
+    while j < SzH - 1 {
+      tmp = [ putPixel i j @get pixels (i * SzH + j)@ ];
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+}

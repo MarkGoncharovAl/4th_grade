@@ -111,21 +111,7 @@ int main(int argc, char *argv[]) {
 
   Printer();
 
-  // single __pcl_start function for void module
-  llvm::FunctionType *FT =
-      llvm::FunctionType::get(Builder->getInt32Ty(), /* va args? */ false);
-
-  stackFunction.push(llvm::Function::Create(FT, llvm::Function::ExternalLinkage,
-                                            "main", Module));
-
-  // basic block to start instruction insertion
-  llvm::BasicBlock *BB =
-      llvm::BasicBlock::Create(*Context, "", stackFunction.top());
-  Builder->SetInsertPoint(BB);
-
   yyparse();
-
-  Builder->CreateRet(llvm::ConstantInt::get(Builder->getInt32Ty(), 0));
 
   std::cout << "Saving module to: " << outName << "\n";
 

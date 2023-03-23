@@ -1,23 +1,26 @@
 # Fiduccia-Mattheyses algorithm
 
-Algorithm to cut graph into 2 parts
+Algorithm to cut hyper-graph into 2 parts
 
-### How to build
+There is no modified algo now...(
+
+### Build
 
 ```
-mkdir build
-cmake -B build .
+git clone https://github.com/MarkGoncharovAl/4th_grade
+cd Fiduccia
+cmake -S . -B build
 cmake --build build
 ```
 
-### How to execute
+### Execute
 
-* Windows
+> Windows
 ```
-.\build\Initial.exe [-m] path_to_benchmark
+.\build\Fiduccia.exe <absolute path to bench>
 ```
-* Linux
+> Linux
 ```
-./build/Fiduccia [-m] path_to_benchmark
+./build/Fiduccia <absolute path to bench>
 ```
 

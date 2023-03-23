@@ -13,7 +13,7 @@ struct Settings {
   fs::path oFile;
   bool isMod;
   explicit operator bool () const {
-    return fs::exists (iFile) && fs::exists (oFile);
+    return fs::exists (iFile);
   }
 };
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     return 0;
 
   //std::cout << std::format ("Input file: {}\nOutput file: {}\n" , 
-  //  settings.iFile.string () , settings.oFile.string ());
+  //settings.iFile.string () , settings.oFile.string ());
 
   std::ifstream File{settings.iFile};
   std::ofstream OutFile{settings.oFile};

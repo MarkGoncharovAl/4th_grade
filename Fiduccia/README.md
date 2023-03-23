@@ -18,9 +18,14 @@ cmake --build build
 > Windows
 ```
 .\build\Fiduccia.exe <absolute path to bench>
+
+Without compilation
+.\bin\Fiduccia.exe <absolute path to bench>
 ```
 > Linux
 ```
 ./build/Fiduccia <absolute path to bench>
-```
 
+Without compilation
+./bin/Fiduccia <absolute path to bench>
+```

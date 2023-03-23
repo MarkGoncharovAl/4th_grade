@@ -46,8 +46,6 @@ class Partitions
   std::vector<bool> const& getPart () const { return VertPartitions; }
 };
 
-unsigned FM (HGraph const& , Partitions&);
-
 class GainContainer
 {
   using RLSide = std::map<int , std::set<int>>;
@@ -72,3 +70,6 @@ class GainContainer
 
   void dump (std::ostream& Out = std::cout) const;
 };
+
+// MAIN ALGO
+unsigned FM (HGraph const& , Partitions&);

@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   Partitions Prt{Graph};
 
   auto const Start = std::chrono::steady_clock::now();
-  unsigned const Iterations = FM(Graph, Prt);
+  unsigned const Iterations = AlgMod::FMMod(Graph, Prt);
   auto const End = std::chrono::steady_clock::now();
 
   OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '

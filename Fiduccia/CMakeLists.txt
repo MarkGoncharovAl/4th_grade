@@ -7,3 +7,5 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp src.cpp)
+
+add_executable(${CMAKE_PROJECT_NAME}Mod mainMod.cpp src.cpp)

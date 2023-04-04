@@ -5,11 +5,30 @@
 #include <sstream>
 #include <string>
 
+static int FMPass (GainContainer& GC , Partitions& Prt , HGraph const& HG);
+static void applyMove (GainContainer& GC , Partitions& Prt , HGraph const& HG ,
+                      unsigned MoveVertex);
+
+unsigned Algorithm (HGraph const& HG , Partitions& Prt)
+{
+  unsigned Iteration = 0;
+  while (1)
+  {
+    ++Iteration;
+    GainContainer GC { HG, Prt };
+    int const Best = FMPass (GC , Prt , HG);
+    if (Best == Prt.getCost ())
+      break;
+    Prt.setCost (Best);
+  }
+  return Iteration;
+}
+
 HGraph::HGraph (std::ifstream& FIn)
 {
   assert (FIn.is_open ());
 
-  unsigned EdgesNo = 0, VerticesNo = 0;
+  unsigned EdgesNo = 0 , VerticesNo = 0;
   FIn >> EdgesNo >> VerticesNo;
 
   Vertices.resize (VerticesNo + 1);
@@ -65,7 +84,7 @@ void Partitions::calculateCost ()
     bool const Inc =
       std::any_of (EdgesVec.begin () + 1 , EdgesVec.end () ,
                   [&CurrentPartition , this](int Edge) {
-                  return VertPartitions[Edge] != CurrentPartition;
+                    return VertPartitions[Edge] != CurrentPartition;
                   });
     if (Inc)
       ++Cost;
@@ -116,25 +135,6 @@ void Partitions::out (std::ostream& Out) const
       continue;
     Out << Part << '\n';
   }
-}
-
-static int FMPass (GainContainer& GC , Partitions& Prt , HGraph const& HG);
-static void applyMove (GainContainer& GC , Partitions& Prt , HGraph const& HG ,
-                      unsigned MoveVertex);
-
-unsigned FM (HGraph const& HG , Partitions& Prt)
-{
-  unsigned Iteration = 0;
-  while (1)
-  {
-    ++Iteration;
-    GainContainer GC { HG, Prt };
-    int const Best = FMPass (GC , Prt , HG);
-    if (Best == Prt.getCost ())
-      break;
-    Prt.setCost (Best);
-  }
-  return Iteration;
 }
 
 int FMPass (GainContainer& GC , Partitions& Prt , HGraph const& HG)

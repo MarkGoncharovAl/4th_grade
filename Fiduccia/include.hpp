@@ -5,6 +5,7 @@
 #include <fstream>
 #include <set>
 #include <map>
+#include <list>
 
 class HGraph
 {
@@ -71,5 +72,5 @@ class GainContainer
   void dump (std::ostream& Out = std::cout) const;
 };
 
-// MAIN ALGO
-unsigned FM (HGraph const& , Partitions&);
+
+unsigned Algorithm (HGraph const& , Partitions&);

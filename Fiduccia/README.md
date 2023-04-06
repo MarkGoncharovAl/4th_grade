@@ -39,7 +39,7 @@ cmake --build build
 
 ### Приложение
 
-![Edges](graphics/Edges.pdf)
-![Test](graphics/Test.pdf)
-![Vertices](graphics/Vertices.pdf)
-![Gain](graphics/Gain.pdf)
+![Edges](graphic.jpg)
+![Test](graphics/Test.jpg)
+![Vertices](graphics/Vertices.jpg)
+![Gain](graphics/Gain.jpg)

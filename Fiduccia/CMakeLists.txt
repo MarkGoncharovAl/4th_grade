@@ -7,15 +7,16 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3")
 
 set (BIN ${CMAKE_PROJECT_NAME})
-set (BIN_MOD ${CMAKE_PROJECT_NAME}Mod)
+set (MODS "Ord" "Mod" "Final")
 
-add_executable(${BIN} main.cpp Alg.cpp)
-add_executable(${BIN_MOD} mainMod.cpp AlgMod.cpp)
+foreach(X ${MODS})
+    add_executable(${BIN}${X} main${X}.cpp Alg${X}.cpp)
+endforeach()
 
-foreach(FILE IN LISTS BIN BIN_MOD)
-add_custom_target(copy-${FILE} ALL
+foreach(X ${MODS})
+add_custom_target(copy-${X} ALL
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_BINARY_DIR}/${FILE}
-    ${CMAKE_SOURCE_DIR}/bin/${FILE}
+    ${CMAKE_CURRENT_BINARY_DIR}/${BIN}${X}
+    ${CMAKE_SOURCE_DIR}/bin/${BIN}${X}
 )
-endforeach(FILE IN LISTS BIN BIN_MOD)
+endforeach()

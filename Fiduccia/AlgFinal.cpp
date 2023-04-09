@@ -1,4 +1,4 @@
-#include "include.hpp"
+#include "includeFinal.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -95,7 +95,6 @@ Partitions::Partitions (HGraph const GraphIn): Graph { GraphIn }
 {
   unsigned const Size = Graph.getVertices ().size () - 1;
   VertPartitions.resize (Size + 1);
-  // TODO remake static partition initialization,
   for (unsigned i = 1; i <= Size / 2; ++i)
     VertPartitions[i] = false;
   for (unsigned i = Size / 2 + 1; i <= Size; ++i)

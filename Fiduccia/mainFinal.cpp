@@ -1,4 +1,4 @@
-#include "includeMod.hpp"
+#include "includeFinal.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -47,8 +47,8 @@ Settings parseArgs(int argc, char *argv[]) {
   std::string file = std::string(argv[1]);
   set.iFile = fs::path(file);
   set.oFile = fs::path(file + ".part.2");
-  std::cout << "Input file: " << fs::absolute(set.iFile)
-            << "\nOutput file: " << fs::absolute(set.oFile) << "\n";
+  std::cout << "Input file: " << set.iFile << "\nOutput file: " << set.oFile
+            << "\n";
   return set;
 }
 

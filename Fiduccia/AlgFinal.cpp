@@ -1,25 +1,9 @@
-#include "includeMod.hpp"
+#include "includeFinal.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <sstream>
 #include <string>
-
-static int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG);
-void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
-               unsigned MoveVertex, unsigned it);
-
-unsigned Algorithm(HGraph const &HG, Partitions &Prt) {
-  int iter = 0;
-  GainContainer GCont{HG, Prt};
-  int best = FMPass(GCont, Prt, HG);
-  for (; best == Prt.getCost(); ++iter) {
-    Prt.setCost(best);
-    GainContainer GContTmp{HG, Prt};
-    best = FMPass(GCont, Prt, HG);
-  }
-  return iter;
-}
 
 HGraph::HGraph(std::ifstream &FIn) {
   assert(FIn.is_open());
@@ -231,6 +215,24 @@ void GainContainer::dump(std::ostream &Out) const {
   for (auto x : Deltas)
     Out << x << ' ';
   Out << "\n";
+}
+
+static int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG);
+static void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
+                      unsigned MoveVertex, unsigned it);
+
+unsigned Algorithm(HGraph const &HG, Partitions &Prt) {
+  unsigned Iteration = 0;
+  while (1) {
+    ++Iteration;
+    GainContainer GC{HG, Prt};
+    int const Best = FMPass(GC, Prt, HG);
+    if (Best == Prt.getCost())
+      break;
+
+    Prt.setCost(Best);
+  }
+  return Iteration;
 }
 
 int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {

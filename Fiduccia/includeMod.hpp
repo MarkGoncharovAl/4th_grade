@@ -1,14 +1,13 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
 #include <fstream>
-#include <set>
-#include <map>
+#include <iostream>
 #include <list>
+#include <map>
+#include <set>
+#include <vector>
 
-class HGraph
-{
+class HGraph {
   using Connections = std::vector<std::vector<unsigned>>;
 
   Connections Vertices;
@@ -23,8 +22,7 @@ public:
   Connections const &getEdges() const { return Edges; }
 };
 
-class Partitions
-{
+class Partitions {
   std::vector<bool> VertPartitions;
   HGraph const &Graph;
 
@@ -46,8 +44,7 @@ public:
   std::vector<bool> const &getPart() const { return VertPartitions; }
 };
 
-class GainContainer
-{
+class GainContainer {
 
   using RLSide = std::map<int, std::list<int>>;
   using Move = std::pair<unsigned, int>;

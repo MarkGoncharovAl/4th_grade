@@ -10,12 +10,10 @@ struct Settings {
   fs::path iFile;
   fs::path oFile;
   bool isMod;
-  explicit operator bool () const {
-    return fs::exists (iFile);
-  }
+  explicit operator bool() const { return fs::exists(iFile); }
 };
 
-Settings parseArgs (int argc , char* argv []);
+Settings parseArgs(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
   Settings settings = parseArgs(argc, argv);
@@ -35,12 +33,12 @@ int main(int argc, char *argv[]) {
   auto const End = std::chrono::steady_clock::now();
 
   OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
-        << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
-        << (End - Start).count()<< ' ' << Iterations << '\n';
+          << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
+          << (End - Start).count() << ' ' << Iterations << '\n';
   return 0;
 }
 
-Settings parseArgs(int argc, char * argv[]) {
+Settings parseArgs(int argc, char *argv[]) {
   Settings set;
   if (argc != 2) {
     std::cout << "Please select files: <bin> <fileIn>\n";
@@ -49,35 +47,35 @@ Settings parseArgs(int argc, char * argv[]) {
   std::string file = std::string(argv[1]);
   set.iFile = fs::path(file);
   set.oFile = fs::path(file + ".part.2");
-  std::cout << "Input file: " << set.iFile << "\nOutput file: "
-  << set.oFile << "\n";
+  std::cout << "Input file: " << set.iFile << "\nOutput file: " << set.oFile
+            << "\n";
   return set;
 }
 
 // For Windows usage I has to abondone it :(
 
-//Settings parseArgs(int argc, char *argv[]) {
-//  // Declare the supported options.
-//  po::options_description desc ("Allowed options");
-//  desc.add_options ()
-//    ("help,h" , "How to use project")
-//    ("file,f" , po::value<fs::path> () , "Path to source file")
-//    ("output,o" , po::value<fs::path> () , "Path to output file")
-//    ("modified,m" , "Use modified algorithm");
+// Settings parseArgs(int argc, char *argv[]) {
+//   // Declare the supported options.
+//   po::options_description desc ("Allowed options");
+//   desc.add_options ()
+//     ("help,h" , "How to use project")
+//     ("file,f" , po::value<fs::path> () , "Path to source file")
+//     ("output,o" , po::value<fs::path> () , "Path to output file")
+//     ("modified,m" , "Use modified algorithm");
 //
-//  po::variables_map vm;
-//  po::store (po::parse_command_line (argc , argv , desc) , vm);
-//  po::notify (vm);
+//   po::variables_map vm;
+//   po::store (po::parse_command_line (argc , argv , desc) , vm);
+//   po::notify (vm);
 //
-//  Settings result;
-//  if (vm.count("file"))
-//    result.iFile = vm["file"].as<fs::path> ();
-//  if (vm.count ("output"))
-//    result.oFile = vm["output"].as<fs::path> ();
-//  result.isMod = vm.count ("modified");
+//   Settings result;
+//   if (vm.count("file"))
+//     result.iFile = vm["file"].as<fs::path> ();
+//   if (vm.count ("output"))
+//     result.oFile = vm["output"].as<fs::path> ();
+//   result.isMod = vm.count ("modified");
 //
-//  if (vm.count ("help") || !result)
-//    std::cout << desc << "\n";
+//   if (vm.count ("help") || !result)
+//     std::cout << desc << "\n";
 //
-//  return result;
-//}
+//   return result;
+// }

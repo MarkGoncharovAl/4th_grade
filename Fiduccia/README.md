@@ -2,6 +2,8 @@
 
 ### Собрать проект
 
+Можно пропустить если нужны просто бинарники
+
 ```
 git clone https://github.com/MarkGoncharovAl/4th_grade
 cd 4th_grade/Fiduccia
@@ -9,18 +11,27 @@ cmake -S . -B build
 cmake --build build
 ```
 
+Если есть проблемы с компиляцией через cmake, то достаточно
+
+```
+g++ -O3 mainOrd.cpp AlgOrd.cpp -o bin\FiducciaOrd.exe
+g++ -O3 mainFinal.cpp AlgFinal.cpp -o bin\FiducciaFinal.exe
+```
+
 ### Использование
 
 > Windows
 ```
-.\bin\Fiduccia.exe <absolute path to bench>
-.\bin\FiducciaMod.exe <absolute path to bench>
+.\bin\FiducciaOrd.exe <path to bench>
+.\bin\FiducciaFinal.exe <path to bench>
 ```
 > Linux
 ```
-./bin/Fiduccia <absolute path to bench>
-./bin/FiducciaMod <absolute path to bench>
+./bin/FiducciaOrd <path to bench>
+./bin/FiducciaFinal <path to bench>
 ```
+
+P.S Mod бинарник содержит ошибку, можно не использовать. Final - правильно смодифицированный и отлаженный файл.
 
 ### Цель проекта
 

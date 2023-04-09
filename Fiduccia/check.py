@@ -63,12 +63,15 @@ def printFile(data, file):
         file.write(result)
 
 def main():
-    org = open("Dump.out", 'w')
+    org = open("DumpOrd.out", 'w')
     mod = open("DumpMod.out", 'w')
-    data_org = start("Fiduccia", 'original')
+    final = open("DumpFinal.out", 'w')
+    data_org = start("FiducciaOrd", 'original')
     printFile(data_org, org)
     data_mod = start("FiducciaMod", 'modified')
     printFile(data_mod, mod)
+    data_final = start("FiducciaFinal", 'final')
+    printFile(data_final, final)
 
 if __name__ == "__main__":
     main()

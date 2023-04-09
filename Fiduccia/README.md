@@ -62,7 +62,8 @@ P.S Mod бинарник содержит ошибку, можно не испо
 
 ### Приложение
 
-![Edges](graphics/Edges.jpg)
-![Test](graphics/Test.jpg)
-![Vertices](graphics/Vertices.jpg)
-![Gain](graphics/Gain.jpg)
+![GAIN](graphics/GAIN.png)
+![ITER](graphics/ITER.png)
+![TIME](graphics/TIME.png)
+![TIME(EDGES)](graphics/TIME(EDGES).png)
+![TIME(VERTICES)](graphics/TIME(VERTICES).png)

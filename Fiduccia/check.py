@@ -54,7 +54,7 @@ def start(isMod : bool, dump : str):
     for i in range(length):
         percent_complete(i, length, title=dump)
         processes[i].wait()
-        with open(str(files[i]) + '.part.2') as f:
+        with open(str(files[i]) + '.dump') as f:
             out.append(f.read())
     percent_complete(length, length, title=dump)
     return out

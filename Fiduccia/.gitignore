@@ -3,3 +3,5 @@ build/
 benchmark_set/*.part.2
 Fiduccia.out
 FiducciaMod.out
+benchmark_set/*.dump
+benchmark_set/*.part.2

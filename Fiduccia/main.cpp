@@ -10,6 +10,7 @@ namespace fs = std::filesystem;
 struct Settings {
   fs::path iFile;
   fs::path oFile;
+  fs::path dumpFile;
   bool isMod;
   explicit operator bool() const { return fs::exists(iFile); }
 };
@@ -25,6 +26,7 @@ int main(int argc, char *argv[]) {
 
   std::ifstream File{settings.iFile};
   std::ofstream OutFile{settings.oFile};
+  std::ofstream DumpFile{settings.dumpFile};
 
   if (!settings.isMod) {
     Ord::HGraph Graph{File};
@@ -34,9 +36,10 @@ int main(int argc, char *argv[]) {
     unsigned const Iterations = Ord::Algorithm(Graph, Prt);
     auto const End = std::chrono::steady_clock::now();
 
-    OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
+    DumpFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
             << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
             << (End - Start).count() << ' ' << Iterations << '\n';
+    Prt.out(OutFile);
   } else {
     Mod::HGraph Graph{File};
     Mod::Partitions Prt{Graph};
@@ -45,9 +48,10 @@ int main(int argc, char *argv[]) {
     unsigned const Iterations = Mod::Algorithm(Graph, Prt);
     auto const End = std::chrono::steady_clock::now();
 
-    OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
+    DumpFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
             << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
             << (End - Start).count() << ' ' << Iterations << '\n';
+    Prt.out(OutFile);
   }
   return 0;
 }
@@ -66,6 +70,7 @@ Settings parseArgs(int argc, char *argv[]) {
     set.isMod = true;
   }
   set.iFile = fs::path(file);
+  set.dumpFile = fs::path(file + ".dump");
   set.oFile = fs::path(file + ".part.2");
   std::cout << "Input file: " << set.iFile << "\nOutput file: " << set.oFile
             << "\n" << "IsModified: " << std::boolalpha << set.isMod << "\n";

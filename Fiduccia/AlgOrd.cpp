@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+namespace Ord {
+
 static int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG);
 static void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
                       unsigned MoveVertex);
@@ -277,4 +279,6 @@ void GainContainer::dump(std::ostream &Out) const {
       Out << Vert << ' ';
     Out << '\n';
   }
+}
+
 }

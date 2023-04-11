@@ -7,6 +7,8 @@
 #include <set>
 #include <vector>
 
+namespace Ord {
+
 class HGraph {
 
   using Connections = std::vector<std::vector<unsigned>>;
@@ -70,3 +72,5 @@ public:
 };
 
 unsigned Algorithm(HGraph const &, Partitions &);
+
+}

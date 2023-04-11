@@ -41,13 +41,14 @@ def percent_complete(step, total_steps, bar_width=60, title="", print_perc=True)
     sys.stdout.write("\r" + disp)
     sys.stdout.flush()
 
-def start(bin : str, dump : str):
+def start(isMod : bool, dump : str):
     out = []
     processes = []
     files = sorted(Path('benchmark_set').glob('*.hgr'))
     length = len(files)
+    cmd = ['./bin/Fiduccia', '-m'] if isMod else ['./bin/Fiduccia']
     for file in files:
-        process = subprocess.Popen([f'./bin/{bin}', file])
+        process = subprocess.Popen(cmd + [file])
         processes.append(process)
     print(f"Starting {dump}", flush=True)
     for i in range(length):
@@ -64,13 +65,10 @@ def printFile(data, file):
 
 def main():
     org = open("DumpOrd.out", 'w')
-    mod = open("DumpMod.out", 'w')
     final = open("DumpFinal.out", 'w')
-    data_org = start("FiducciaOrd", 'original')
+    data_org = start(False, 'original')
     printFile(data_org, org)
-    data_mod = start("FiducciaMod", 'modified')
-    printFile(data_mod, mod)
-    data_final = start("FiducciaFinal", 'final')
+    data_final = start(True, 'modified')
     printFile(data_final, final)
 
 if __name__ == "__main__":

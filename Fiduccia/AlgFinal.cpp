@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 
+namespace Mod {
+
 HGraph::HGraph(std::ifstream &FIn) {
   assert(FIn.is_open());
 
@@ -320,4 +322,6 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
       }
 
   Prt.update(MoveVertex);
+}
+
 }

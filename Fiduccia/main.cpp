@@ -1,3 +1,4 @@
+#include "includeOrd.hpp"
 #include "includeFinal.hpp"
 
 #include <chrono>
@@ -25,30 +26,49 @@ int main(int argc, char *argv[]) {
   std::ifstream File{settings.iFile};
   std::ofstream OutFile{settings.oFile};
 
-  HGraph Graph{File};
-  Partitions Prt{Graph};
+  if (!settings.isMod) {
+    Ord::HGraph Graph{File};
+    Ord::Partitions Prt{Graph};
 
-  auto const Start = std::chrono::steady_clock::now();
-  unsigned const Iterations = Algorithm(Graph, Prt);
-  auto const End = std::chrono::steady_clock::now();
+    auto const Start = std::chrono::steady_clock::now();
+    unsigned const Iterations = Ord::Algorithm(Graph, Prt);
+    auto const End = std::chrono::steady_clock::now();
 
-  OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
-          << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
-          << (End - Start).count() << ' ' << Iterations << '\n';
+    OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
+            << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
+            << (End - Start).count() << ' ' << Iterations << '\n';
+  } else {
+    Mod::HGraph Graph{File};
+    Mod::Partitions Prt{Graph};
+
+    auto const Start = std::chrono::steady_clock::now();
+    unsigned const Iterations = Mod::Algorithm(Graph, Prt);
+    auto const End = std::chrono::steady_clock::now();
+
+    OutFile << settings.iFile.string() << ' ' << Graph.getEdges().size() << ' '
+            << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
+            << (End - Start).count() << ' ' << Iterations << '\n';
+  }
   return 0;
 }
 
 Settings parseArgs(int argc, char *argv[]) {
   Settings set;
-  if (argc != 2) {
-    std::cout << "Please select files: <bin> <fileIn>\n";
+  std::string file;
+  if (argc == 1 || argc > 3) {
+    std::cout << "Please select files: <bin> (-m) <fileIn>\n";
     return set;
+  } else if (argc == 2) {
+    file = std::string(argv[1]);
+    set.isMod = false;
+  } else { // argc == 3
+    file = std::string(argv[2]);
+    set.isMod = true;
   }
-  std::string file = std::string(argv[1]);
   set.iFile = fs::path(file);
   set.oFile = fs::path(file + ".part.2");
   std::cout << "Input file: " << set.iFile << "\nOutput file: " << set.oFile
-            << "\n";
+            << "\n" << "IsModified: " << std::boolalpha << set.isMod << "\n";
   return set;
 }
 

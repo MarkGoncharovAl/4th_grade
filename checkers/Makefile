@@ -1,6 +1,6 @@
 all:
 	javac -d . --release 8 Checker.java
-	appletviewer Checker.html
+	appletviewer -J-Djava.security.policy==unsecure.policy Checker.html
 
 clean:
 	rm *.class

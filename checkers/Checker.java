@@ -1,4 +1,3 @@
-//First.java  
 import java.applet.*;  
 import java.awt.*;  
 import java.awt.event.*;
@@ -11,6 +10,16 @@ import src.Coord;
 
 import java.util.Vector;
 import java.util.Collections;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 
 class Click {
     private Button main;
@@ -156,7 +165,7 @@ class Click {
 class Action {
     public Position[][] pos;
     public Click click;
-    Color color;
+    private Color color;
 
     private void switchUser() {
         color = 
@@ -216,6 +225,214 @@ class Action {
                 }
         return white == 0 || black == 0;
     }
+    public boolean isWhite() {
+        return color == Color.white;
+    }
+}
+
+class Chooser {
+    public Image chooser;
+    private Integer width;
+    private Integer height;
+
+    public Chooser(Integer wd, Integer he) {
+        chooser = Toolkit.getDefaultToolkit().getImage("./twoPC1.gif");
+        width = wd;
+        height = he;
+    }
+    public void draw(Graphics g, Checker checker) {
+        g.drawImage(chooser, 0, 100, width, height / 4, checker);  
+        g.setColor(Color.red);
+        g.drawRect(150, 400, 200, 100);
+        g.drawRect(450, 400, 200, 100);
+        g.setColor(Color.black);
+        g.fillRect(151, 401, 199, 99);
+        g.fillRect(451, 401, 199, 99);
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("Server", 175, 460);
+        g.drawString("Client", 485, 460);
+    }
+    public boolean isServer(int x, int y) {
+        return x > 150 && x < 350 
+            && y > 400 && y < 500;
+    }
+    public boolean isClient(int x, int y) {
+        return x > 450 && x < 650 
+            && y > 400 && y < 500;
+    }
+}
+
+class Port {
+    public Image chooser;
+    private Integer width;
+    private Integer height;
+    private boolean isServer;
+    private String ip;
+    private String port;
+    private boolean printIp;
+
+    public Port(Integer wd, Integer he, boolean isServer2) {
+        chooser = Toolkit.getDefaultToolkit().getImage("./twoPC1.gif");
+        width = wd;
+        height = he;
+        this.isServer = isServer2;
+        ip = isServer2 ? getIp() : "";
+        port = isServer2 ? "11000" : "";
+        printIp = true;
+    }
+    public String getIP() {
+        return ip;
+    }
+    public String getPort() {
+        return port;
+    }
+    private String getIp () {
+        String out = "ERROR";
+        try (final DatagramSocket datagramSocket = new DatagramSocket()) {
+            datagramSocket.connect(InetAddress.getByName("8.8.8.8"), 12345);
+            out = datagramSocket.getLocalAddress().getHostAddress();
+        }
+        catch (UnknownHostException e) {
+            System.out.println(e.getMessage());
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return out;
+    }
+    public void draw(Graphics g, Checker checker) {
+        g.drawImage(chooser, 0, 100, width, height / 4, checker);  
+        if (isServer)
+            drawServer(g);
+        else
+            drawClient(g);
+    }
+    public void drawServer(Graphics g) {
+        g.setColor(Color.red);
+        g.drawRect(150, 400, 200, 100);
+        g.drawRect(450, 400, 200, 100);
+        g.drawRect(50, 600, 400, 100);
+        g.drawRect(550, 600, 200, 100);
+        g.setColor(Color.black);
+        g.fillRect(151, 401, 199, 99);
+        g.fillRect(451, 401, 199, 99);
+        g.fillRect(51, 601, 399, 99);
+        g.fillRect(551, 601, 199, 99);
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("IP", 225, 460);
+        g.drawString("Port", 500, 460);
+        g.drawString(ip, 100, 660);
+        g.drawString(port, 580, 660);
+    }
+    public void drawClient(Graphics g) {
+        g.setColor(Color.red);
+        g.drawRect(150, 400, 200, 100);
+        g.drawRect(450, 400, 200, 100);
+        g.drawRect(50, 600, 400, 100);
+        g.drawRect(550, 600, 200, 100);
+        g.setColor(Color.black);
+        g.fillRect(151, 401, 199, 99);
+        g.fillRect(451, 401, 199, 99);
+        g.fillRect(51, 601, 399, 99);
+        g.fillRect(551, 601, 199, 99);
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", Font.BOLD, 40));
+        g.drawString("IP", 225, 460);
+        g.drawString("Port", 500, 460);
+        g.drawString(ip, 100, 660);
+        g.drawString(port, 580, 660);
+    }
+    public boolean update(char sym) {
+        if (!isServer) {
+            if (printIp) {
+                switch(sym) {
+                    case 10: // Enter
+                        printIp = false;
+                        break;
+                    case 8: // Backspace
+                        ip = ip.length() == 0 ?
+                            "" :
+                            ip.substring(0, ip.length() - 1);
+                        break;
+                    default:
+                        ip += sym;
+                        break;
+                }
+            } else {
+                switch(sym) {
+                    case 10: // Enter
+                        return true;
+                    case 8: // Backspace
+                        port = port.length() == 0 ?
+                            "" :
+                            port.substring(0, port.length() - 1);
+                        break;
+                    default:
+                        port += sym;
+                        break;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+class Sock {
+    private Socket socket;
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private ServerSocket server;
+    private boolean is_server;
+    public boolean isServer() {
+        return is_server;
+    }
+    public Sock (String ip, Integer port, boolean is_server) {
+        if (is_server) {
+            try {
+                server = new ServerSocket(port);
+                socket = server.accept();
+            } catch (IOException e) {
+                System.out.println("Creating sock server : " + e.getMessage());
+            }
+        } else { // is_client
+            try {
+                socket = new Socket(ip, port);
+            } catch (IOException e) {
+                System.out.println("Creating sock client : " + e.getMessage());
+            } 
+        }
+        System.out.println("Created sockets");
+        this.is_server = is_server;
+    }
+    public Integer readData() {
+        Integer message = 0;
+        try {
+            ois = new ObjectInputStream(socket.getInputStream());
+            message = (Integer) ois.readObject();
+            System.out.println("Message: " + message);
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Can't get " + e.getMessage());
+        }
+        return message;
+    }
+    public void sendData(Integer data) {
+        try {
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            oos.writeObject(data);
+            System.out.println("Printing: " + data);
+        } catch (IOException e) {
+            System.out.println("Can't get " + e.getMessage());
+        }
+    }
+}
+
+enum Stage {
+    CHOOSER, 
+    PORT,
+    GAME,
+    END
 }
 
 public class Checker extends Applet 
@@ -223,13 +440,18 @@ public class Checker extends Applet
     
     Action act;
     Image final_image;
+    Chooser chooser;
+    Port port;
+    Stage stage;
+    Sock socket;
 
     public void init() {
+        stage = Stage.CHOOSER;
         act = new Action();
         addKeyListener( this );
         addMouseListener( this );
-        final_image = Toolkit.getDefaultToolkit().getImage("/home/mark/Study/8/checkers/black.gif");
-
+        final_image = Toolkit.getDefaultToolkit().getImage("./black.gif");
+        chooser = new Chooser(getWidth(), getHeight());
     }
     public void start() {
     }
@@ -247,11 +469,28 @@ public class Checker extends Applet
         }
     }
     public void paint(Graphics g) {  
-        if (act.checkEnd()) 
-            g.drawImage(final_image, 0, 0, getWidth(), getHeight(), this);  
-        else {
-        paintField(g);
-        act.draw(g);
+        switch(stage) {
+        case CHOOSER:
+            chooser.draw(g, this);
+            break;
+        case PORT:
+            port.draw(g, this);
+            break;
+        case GAME:
+            if (act.checkEnd()) 
+                g.drawImage(final_image, 0, 0, getWidth(), getHeight(), this);  
+            else {
+                paintField(g);
+                act.draw(g);
+                if (act.isWhite() ^ socket.isServer()) {
+                    System.out.println("Wait for");
+                    Integer data = socket.readData();
+                    act.update(data / 10, data % 10);
+                }
+            }
+            break;
+        default:
+            break;
         }
         super.paint(g);
     }  
@@ -261,10 +500,22 @@ public class Checker extends Applet
     public void keyTyped( KeyEvent e ) {
        char c = e.getKeyChar();
        if ( c != KeyEvent.CHAR_UNDEFINED ) {
-        // action
-          repaint();
-          e.consume();
+            processKey(c);
+            repaint();
+            e.consume();
        }
+    }
+    private void processKey(char sym) {
+        switch (stage) {
+            case PORT:
+                if (port.update(sym)) {
+                    socket = new Sock(port.getIP(), Integer.parseInt(port.getPort()), false);
+                    stage = Stage.GAME;
+                }
+                break;
+            default:
+                break;
+        }
     }
  
     public void mouseEntered( MouseEvent e ) { }
@@ -274,10 +525,37 @@ public class Checker extends Applet
     public void mouseClicked( MouseEvent e ) {
         int x = e.getX();
         int y = e.getY();
-        act.update((x - 10) / 100, (y - 10) / 100);
+        processMouse(x, y);
         repaint();
         e.consume();
     }
+
+    private void processMouse(int x, int y) {
+        switch (stage) {
+            case CHOOSER:
+                if (chooser.isServer(x, y)) {
+                    port = new Port(getWidth(), getHeight(), true);
+                    port.draw(getGraphics(), this);
+                    socket = new Sock(port.getIP(), Integer.parseInt(port.getPort()), true);
+                    stage = Stage.GAME;
+                }
+                else if (chooser.isClient(x, y)) {
+                    port = new Port(getWidth(), getHeight(), false);
+                    stage = Stage.PORT;
+                }
+                break;
+            case GAME:
+                if (!(act.isWhite() ^ socket.isServer())) {
+                    System.out.println("Sending");
+                    act.update((x - 10) / 100, (y - 10) / 100);
+                    socket.sendData((x - 10) / 100 * 10 + (y - 10) / 100);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+  
   
 }  
 

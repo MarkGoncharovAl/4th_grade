@@ -6,7 +6,7 @@
 //
 //------------------------------------------------------------------------------
 
-#include "/home/mark/Programming/7/ParProga/MIPT/Compiler/Language/parser.hpp"
+#include "Language/parser.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

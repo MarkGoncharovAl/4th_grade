@@ -245,13 +245,16 @@ class Chooser {
         g.setColor(Color.red);
         g.drawRect(150, 400, 200, 100);
         g.drawRect(450, 400, 200, 100);
+        g.drawRect(300, 600, 200, 100);
         g.setColor(Color.black);
         g.fillRect(151, 401, 199, 99);
         g.fillRect(451, 401, 199, 99);
+        g.fillRect(301, 601, 199, 99);
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.BOLD, 40));
         g.drawString("Server", 175, 460);
         g.drawString("Client", 485, 460);
+        g.drawString("Yourself", 307, 660);
     }
     public boolean isServer(int x, int y) {
         return x > 150 && x < 350 
@@ -260,6 +263,10 @@ class Chooser {
     public boolean isClient(int x, int y) {
         return x > 450 && x < 650 
             && y > 400 && y < 500;
+    }
+    public boolean isYourSelf(int x, int y) {
+        return x > 300 && x < 500 
+            && y > 600 && y < 700;
     }
 }
 
@@ -432,6 +439,7 @@ enum Stage {
     CHOOSER, 
     PORT,
     GAME,
+    GAMEONE,
     END
 }
 
@@ -489,6 +497,13 @@ public class Checker extends Applet
                 }
             }
             break;
+        case GAMEONE:
+            if (act.checkEnd()) 
+                g.drawImage(final_image, 0, 0, getWidth(), getHeight(), this);  
+            else {
+                paintField(g);
+                act.draw(g);
+            }
         default:
             break;
         }
@@ -542,6 +557,8 @@ public class Checker extends Applet
                 else if (chooser.isClient(x, y)) {
                     port = new Port(getWidth(), getHeight(), false);
                     stage = Stage.PORT;
+                } else if (chooser.isYourSelf(x, y)) {
+                    stage = Stage.GAMEONE;
                 }
                 break;
             case GAME:
@@ -550,6 +567,9 @@ public class Checker extends Applet
                     act.update((x - 10) / 100, (y - 10) / 100);
                     socket.sendData((x - 10) / 100 * 10 + (y - 10) / 100);
                 }
+                break;
+            case GAMEONE:
+                act.update((x - 10) / 100, (y - 10) / 100);
                 break;
             default:
                 break;
